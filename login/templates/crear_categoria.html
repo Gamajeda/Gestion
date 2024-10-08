@@ -8,7 +8,7 @@
 
             <!-- Encabezado del formulario con el título y la información del usuario -->
             <header id="header" class="header">
-                <h1>Crear ticket</h1>
+                <h1>Crear categoria</h1>
                 <br>
                 <div class="informacion-usuario">
                     <span>Usuario: <strong>{{ user.username }}</strong></span>
@@ -19,7 +19,7 @@
             <!-- Formulario para la creación de tickets, que se envía al servidor mediante POST -->
             <form method="POST">
                 {% csrf_token %}
-    {{ form.as_p }}
+                {{ form.as_p }}
                 <button type="submit">Guardar Categoría</button>
             </form>
             

@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block contenido %}
+<h1>Editar Ticket: {{ ticket.titulo }}</h1>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+</form>
+<a href="{% url 'inicio' %}" class="btn btn-secondary">Cancelar</a>
+{% endblock %}

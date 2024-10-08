@@ -12,12 +12,11 @@
             <!-- Menú de navegación en la barra lateral -->
             <ul class="menu-lateral">
                 <!-- Enlaces a diferentes secciones del sistema -->
+                <li><a href="{% url 'categoria' %}" class="menu-opcion">Crear categoria</a></li>
                 <li><a href="{% url 'tikcet' %}" class="menu-opcion">Crear Ticket</a></li>
                 <li><a href="#" class="menu-opcion" id="mostrar-todos">Mostrar Todos</a></li>
                 <li><a href="#" class="menu-opcion" id="tickets-en-progreso">Tickets en Progreso</a></li>
-                <li><a href="#" class="menu-opcion" id="tickets-abiertos">Tickets Abiertos</a></li>
-                <li><a href="#" class="menu-opcion" id="tickets-cerrados">Tickets Cerrados</a></li>
-                <li><a href="#" class="menu-opcion" id="cerrar-sesion">Cerrar Sesión</a></li>
+                
             </ul>
         </div>
     </div>
@@ -46,7 +45,7 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Cliente</th>
+                            <th>Encargado</th>
                             <th>ID Ticket</th>
                             <th>Problema</th>
                             <th>Descripción</th>
@@ -56,6 +55,32 @@
                             <th>Resuelto</th>
                         </tr>
                     </thead>
+                    <tbody>
+                        {% for ticket in tickets %}
+                            <tr>
+                                <td>{{ ticket.usuario.username }}</td>
+                                <td>{{ ticket.id }}</td>
+                                <td>{{ ticket.titulo }}</td>
+                                <td>{{ ticket.descripcion }}</td>
+                                <td>{{ ticket.get_estado_display }}</td>
+                                <td>{{ ticket.fecha_creacion }}</td>
+                                <td>{{ ticket.fecha_resolucion }}</td>
+                                <td>{{ ticket.get_estado_display }}</td>
+                                <td>
+                                    <a href="{% url 'edit_ticket' ticket.id %}" class="btn btn-primary">Editar</a>
+                                    <form action="{% url 'delete_ticket' ticket.id %}" method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="9">No hay tickets disponibles.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                    
                 </table>
             </section>
         </main>

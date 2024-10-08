@@ -1,40 +1,56 @@
 from django import forms
-from .models import Ticket, Categoria
+from .models import Ticket, Categoria, UserProfile
 from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 
 # Formulario para crear una categoría
+User=get_user_model()
+
 
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = Categoria
-        fields = ['nombre']
+        fields = ['nombre', 'descripcion', 'termino']
         labels = {
-            'nombre': 'Nombre'
+            'nombre': 'Nombre',
+            'descripcion': 'Descripción',
+            'termino': 'Término'
         }
         widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control'})
-        }  
-        
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
+            'termino': forms.TextInput(attrs={'class': 'form-control'})
+        }
 
-# Formulario para crear un ticket
 
 class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = ['titulo', 'descripcion', 'prioridad', 'categoria']
+        fields = ['titulo', 'descripcion', 'prioridad', 'categoria', 'fecha_creacion', 'fecha_resolucion', 'usuario']
         labels = {
             'titulo': 'Título',
             'descripcion': 'Descripción',
             'prioridad': 'Prioridad',
-            'categoria': 'Categoría'
+            'categoria': 'Categoría',
+            'fecha_creacion': 'Fecha de Creación',
+            'fecha_resolucion': 'Fecha de Resolución',
+            'usuario': 'Usuario',
         }
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
             'prioridad': forms.Select(attrs={'class': 'form-control'}),
-            'categoria': forms.Select(attrs={'class': 'form-control'})
+            'categoria': forms.Select(attrs={'class': 'form-control'}),
+            'fecha_creacion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'fecha_resolucion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'usuario': forms.Select(attrs={'class': 'form-control'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(TicketForm, self).__init__(*args, **kwargs)
+        self.fields['usuario'].queryset = User.objects.all()  # Cambia aquí para que use User
+
 # Formulario para editar un ticket
 
 class TicketFormEdit(forms.ModelForm):

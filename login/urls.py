@@ -8,4 +8,7 @@ urlpatterns = [
     path('logout/', views.logout, name='logout'),
     path('tikcet/', views.tikcet, name='tikcet'),
     path('register/', views.register, name='register'),
+    path('categoria/', views.categoria, name='categoria'),
+    path('editar_ticket/<int:ticket_id>/', views.edit_ticket, name='edit_ticket'),  # Ruta para editar
+    path('eliminar_ticket/<int:ticket_id>/', views.delete_ticket, name='delete_ticket'),  # Ruta para eliminar
 ]
