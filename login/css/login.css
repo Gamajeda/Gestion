@@ -1,0 +1,99 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/*//============================================================================================*/
+/*//================               Apariencia del contenedor                   =================*/
+/*//============================================================================================*/
+
+/* Contenedor principal del login */
+.contenedor-login {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 80%;
+    width: 80%;
+    /* border:solid 1px red; */
+}
+
+/*//============================================================================================*/
+/*//=========                   Apariencia del contenedor de los campos        =================*/
+/*//============================================================================================*/
+.login {
+    background-color: black;
+    padding: 40px;
+    border-radius: 10px;
+    text-align: center;
+    width: 100%;
+    height: 70%;
+    max-width: 800px;
+    /* border: solid 1px yellow; */
+}
+
+/*//============================================================================================*/
+/*//=====================               Apariencia del logo                    =================*/
+/*//============================================================================================*/
+
+.logo-usuario img {
+    border-radius: 50%;
+    margin-bottom: 20px;
+}
+
+/*//============================================================================================*/
+/*//=====================               Apariencia del título                   ================*/
+/*//============================================================================================*/
+
+h2 {
+    margin-bottom: 30px;
+    color: white;
+    font-size: 32px;
+}
+
+.input-form input {
+    width: 100%;
+    padding: 10px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    font-size: 16px;
+    background: none;
+    color: white;
+}
+
+/*//============================================================================================*/
+/*//=====================               Apariencia del botón                   =================*/
+/*//============================================================================================*/
+
+
+.boton-enviar {
+    width: 50%;
+    padding: 10px;
+    background-color: #28a745;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.boton-enviar:hover {
+    background-color: #218838;
+}
+
+/*//============================================================================================*/
+/*//=====================               Apariencia del body                    =================*/
+/*//============================================================================================*/
+
+body {
+    font-family: 'Times New Roman', Times, serif, Helvetica, sans-serif;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}

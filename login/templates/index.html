@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+<body>
+    <div class="container">
+        <h1>Bienvenido a la Plataforma</h1>
+        <p>Por favor, elige una opción:</p>
+        
+        <div class="actions">
+            <a href="{% url 'login' %}" class="btn">Iniciar Sesión</a>
+            <a href="{% url 'register' %}" class="btn">Registrarse</a>
+        </div>
+    </div>
+
+  
+</body>
+{% endblock %}

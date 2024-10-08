@@ -1,0 +1,101 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/*// ============================================================================================ */
+/*// ========================            Contenedor principal           ========================= */
+/*// ============================================================================================ */
+
+.contenedor-principal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+}
+
+.main-principal {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 5px;
+    /* border: solid 1px red; */
+}
+
+.contenedor-boton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    width: 50%;
+    /* border: solid 1px red; */
+    margin: 0 auto;
+    gap: 10px;
+}
+
+.btn-crear-ticket {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-descartar-ticket {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 20px;
+    background-color: #007bff;
+    color: white;
+    width: 100%;
+}
+
+.informacion-usuario {
+    display: flex;
+    align-items: center;
+}
+
+.contenedor-datos-ticket {
+    display: flex;
+    padding: 10px;
+    width: 100%;
+    /* border: solid 1px green; */
+    padding: 5px;
+    flex-wrap: wrap;
+}
+
+.seccion {
+    flex: 1 1 25%; /* Cada sección ocupa el 45% del contenedor, con flexibilidad*/
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    min-width: 300px;
+}
+
+.campo {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+body {
+    height: 100vh;
+}

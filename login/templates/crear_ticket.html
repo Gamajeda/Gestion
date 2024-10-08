@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block titulo %}Crear Ticket{% endblock %}
+{% block contenido %}
+    <div class="contenedor-principal" id="contenedor-principal"> 
+        <!-- Contenedor principal con los tickets -->
+        <main class="main-principal" id="main-principal">
+            <br>
+
+            <!-- Encabezado del formulario con el título y la información del usuario -->
+            <header id="header" class="header">
+                <h1>Crear ticket</h1>
+                <br>
+                <div class="informacion-usuario">
+                    <span>Usuario: <strong>{{ user.username }}</strong></span>
+                </div>
+            </header>
+            <br><br>
+
+            <!-- Formulario para la creación de tickets, que se envía al servidor mediante POST -->
+            <form class="datos-ticket" id="datos-ticket"  method="POST">
+                <div class="contenedor-datos-ticket">   
+                    <div class="seccion" id="campos-ticket">
+                        <h1>Datos del ticket</h1>
+                        <div class="campo">
+                            <input type="text" name="id-ticket" id="id-ticket" readonly>
+                            <input type="text" name="asunto-titulo" placeholder="Asunto/Título" required>
+                            <textarea name="descripcion" placeholder="Descripción del problema" required></textarea>
+                            <select name="categoria" required>
+                                <option value="" disabled selected>Seleccione una categoría</option>
+                                <option value="conectividad">Problemas de conectividad</option>
+                                <option value="configuracion">Errores de configuración</option>
+                                <option value="hardware">Problemas de hardware</option>
+                                <option value="software">Errores de software</option>
+                                <option value="matenimiento">Solicitud de mantenimiento</option>
+                                <option value="seguridad">Problemas de seguridad</option>
+                                <option value="otros">Otros problemas</option>
+                            </select>
+                            <select name="prioridad" required>
+                                <option value="" disabled selected>Seleccione una prioridad</option>
+                                <option value="alta">Alta</option>
+                                <option value="media">Media</option>
+                                <option value="baja">Baja</option>
+                            </select>
+                            <input type="text" name="estado" value="Abierto" required>
+                            <label for="fecha-creacion" class="fecha-creacion">Fecha de creación</label>
+                            <input type="date" name="fecha-creacion" id="fecha-creacion">
+                            <label for="fecha-resolucion" class="fecha-resolucion">Fecha de resolución</label>
+                            <input type="date" name="fecha-resolucion" id="fecha-resolucion">                    
+                        </div>
+                    </div>
+                    <div class="seccion" id="campos-cliente">
+                        <h1>Datos del cliente</h1>
+                        <div class="campo">
+                            <input type="text" name="nombre" placeholder="Nombre cliente" required>
+                            <input type="email" name="email" placeholder="Email" required>
+                            <input type="tel" name="tel" placeholder="Teléfono" required>
+                        </div>
+                    </div>
+                    <div class="seccion" id="asignacion-seguimiento">
+                        <h1>Asignación y Seguimiento</h1>
+                        <div class="campo">
+                            <input type="text" name="asignado" placeholder="Asginado a ...">
+                            <input type="text" name="departamento" placeholder="Departamento">
+                        </div>
+                    </div>
+                    <div class="seccion" id="notas-internas">
+                        <h1>Notas Internas</h1>
+                        <div class="campo">
+                            <textarea name="notas" placeholder="Comentarios internos"></textarea>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Botones para crear o descartar el ticket -->
+                <div class="contenedor-boton" id="contenedor-boton">
+                    <input type="submit" id="enviar-ticket" class="btn-crear-ticket" value="Crear Ticket" name="btn-crear-ticket">
+                    <input type="button" class="btn-descartar-ticket" value="Descartar Ticket" name="btn-descartar-ticket" id="btn-descartar-ticket">
+                </div>
+            </form>
+        </main>
+    </div>
+{% endblock %}
