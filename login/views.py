@@ -1,27 +1,30 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import CustomUserCreationForm, LoginForm, TicketForm, TicketFormEdit, CategoriaForm
+from .forms import CustomUserCreationForm, LoginForm, TicketForm, TicketFormEdit, CategoriaForm, EquipoForm
 from django.contrib.auth import login as django_login, authenticate
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth import logout as django_logout, get_user_model
-from .models import Categoria, Ticket
+
+from .models import Categoria, Ticket, UserProfile, Rol
 from django.views.decorators.csrf import csrf_protect
 
 # Vista para la página principal
-def edit_ticket(request, ticket_id):
-    ticket = get_object_or_404(Ticket, id=ticket_id)
+def edit_ticket(request, id):
+    ticket = get_object_or_404(Ticket, id_ticket=id)  # Obtiene el ticket por ID
+
     if request.method == 'POST':
-        form = TicketForm(request.POST, instance=ticket)
+        form = TicketFormEdit(request.POST, instance=ticket)
         if form.is_valid():
             form.save()
-            messages.success(request, 'Ticket editado exitosamente.')
-            return redirect('inicio')
+            return redirect('inicio')  # Redirige a la página de inicio u otra que desees
     else:
-        form = TicketForm(instance=ticket)
+        form = TicketFormEdit(instance=ticket)  # Carga el formulario con la instancia del ticket
+
     return render(request, 'editar_ticket.html', {'form': form, 'ticket': ticket})
 
 # Vista para eliminar un ticket
 def delete_ticket(request, ticket_id):
-    ticket = get_object_or_404(Ticket, id=ticket_id)  # Obtiene el ticket
+    ticket = get_object_or_404(Ticket, id_ticket=ticket_id)  # Obtiene el ticket
     if request.method == 'POST':
         ticket.delete()  # Elimina el ticket
         messages.success(request, 'Ticket eliminado exitosamente.')
@@ -52,18 +55,91 @@ def ticket_list(request):
 # Vista para la página de inicio
 @csrf_protect
 def inicio(request):
-    tickets = Ticket.objects.all()  # Obtiene todos los tickets
-    return render(request, 'inicio.html', {'tickets': tickets})  # Pasa los tickets al template
+    search_query = request.GET.get('buscar', '').strip()  # Obtiene el término de búsqueda y elimina espacios
+    tickets = Ticket.objects.filter(estado='P')  # Solo tickets pendientes
+
+    # Si hay un término de búsqueda, filtra los tickets
+    if search_query:
+        tickets = tickets.filter(
+            Q(usuario__user__username__icontains=search_query) |  # Filtra por nombre de usuario
+            Q(titulo__icontains=search_query) |  # Filtra por título
+            Q(descripcion__icontains=search_query)  # Filtra por descripción
+        ).distinct()  # Asegúrate de que no haya duplicados
+
+    # Intenta obtener el perfil del usuario actual
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)  # Asume que hay un único perfil
+    except UserProfile.DoesNotExist:
+        user_profile = None  # Maneja el caso donde no hay perfil
+    except UserProfile.MultipleObjectsReturned:
+        user_profile = None  # Maneja el caso de duplicados (esto es un error)
+
+    return render(request, 'inicio.html', {
+        'tickets': tickets,  # Ahora solo hay tickets pendientes
+        'user_profile': user_profile,
+    })
+
+
+def crear_equipo(request):
+    if request.method == 'POST':
+        form = EquipoForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Aparato creado exitosamente.')
+            return redirect('crear_equipo')  # Redirige a la vista deseada
+    else:
+        form = EquipoForm()
+
+    return render(request, 'crear_equipo.html', {'form': form})
+
+
+def todo(request):
+    search_query = request.GET.get('buscar', '')  # Obtiene el término de búsqueda
+    tickets = Ticket.objects.filter(estado='R')  # Solo tickets pendientes
+
+    # Si hay un término de búsqueda, filtra los tickets
+    if search_query:
+        tickets = tickets.filter(
+            Q(usuario__user__username__icontains=search_query) |  # Asegúrate de usar el campo correcto
+            Q(titulo__icontains=search_query) |  # Filtra por título
+            Q(descripcion__icontains=search_query)  # Filtra por descripción
+        )
+
+    # Intenta obtener el perfil del usuario actual
+    try:
+        user_profile = UserProfile.objects.get(user=request.user)  # Asume que hay un único perfil
+    except UserProfile.DoesNotExist:
+        user_profile = None  # Maneja el caso donde no hay perfil
+    except UserProfile.MultipleObjectsReturned:
+        user_profile = None  # Maneja el caso de duplicados (esto es un error)
+
+    return render(request, 'inicio.html', {
+        'tickets': tickets,  # Ahora solo hay tickets pendientes
+        'user_profile': user_profile,
+    })
+
+
 
 
 # Vista para la página de tickets
+@csrf_protect
 def tikcet(request):
     if request.method == 'POST':
         form = TicketForm(request.POST)
         if form.is_valid():
-            form.save()
+            ticket = form.save(commit=False)
+            try:
+                usuario_perfil = UserProfile.objects.get(user=request.user)
+                ticket.usuario = usuario_perfil  # Asignar el perfil de usuario como creador
+            except UserProfile.DoesNotExist:
+                messages.error(request, 'Error: el perfil de usuario no se encuentra.')
+                return redirect('tikcet')
+
+            ticket.save()  # Guardar el ticket
+
             messages.success(request, 'Ticket creado exitosamente.')
-            return redirect('tikcet')  # Cambia esto según la ruta a la que quieras redirigir
+            return redirect('inicio')  # Cambiar a 'inicio' en vez de 'ticket_view'
+            
     else:
         form = TicketForm()
 
@@ -72,15 +148,8 @@ def tikcet(request):
     
     # Filtrar las categorías cuyo término tiene 5 letras o menos
     categorias = [cat for cat in categorias if len(cat.termino) <= 5]
-    
-    User = get_user_model()  # Obtener el modelo de usuario
-    usuarios = User.objects.all()  # Obtener todos los usuarios
-    
-     # Pasar los usuarios al formulario
-    form.fields['usuario'].queryset = usuarios  # Esto asigna la lista de usuarios al campo de usuario
 
-
-    return render(request, 'crear_ticket.html', {'form': form, 'categorias': categorias, 'usuarios': usuarios})
+    return render(request, 'crear_ticket.html', {'form': form, 'categorias': categorias})
 
 # Vista para iniciar sesión
 def login_view(request):
@@ -106,13 +175,22 @@ def logout(request):
     return redirect('login')
 
 # Vista para registrar un usuario
+
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
+            # Crear el usuario
             user = form.save()
-            django_login(request, user)  # Inicia sesión al nuevo usuario
-            return redirect('inicio')  # Cambia esto si quieres redirigir a otra vista
+            # Obtener el rol (puedes cambiar esto según cómo obtienes el rol)
+            rol_id = request.POST.get('rol_id')  # Asegúrate de que este campo esté en tu formulario
+            if rol_id:
+                rol = Rol.objects.get(id=rol_id)
+                user.roles.add(rol)  # Asigna el rol al usuario
+            
+
+            return redirect('login')  # Redirigir después de crear el usuario
     else:
         form = CustomUserCreationForm()
+
     return render(request, 'register.html', {'form': form})
