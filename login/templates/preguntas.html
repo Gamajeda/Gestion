@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titulo %}Preguntas Frecuentes{% endblock %}
+{% block contenido %}
+<h1>Problemas Comunes con el Equipo</h1>
+    {% if user_profile.rol_id == 3 %}
+        <a href="{% url 'agregar_problema' %}" class="btn btn-primary">Agregar Problema</a>
+    {% endif %}
+<div class="problemas">
+    
+    {% for problema in problemas %}
+        <div class="problema-item">
+            <h3>{{ problema.titulo }}</h3>
+            <p>{{ problema.descripcion }}</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

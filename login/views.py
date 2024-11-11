@@ -1,14 +1,45 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import CustomUserCreationForm, LoginForm, TicketForm, TicketFormEdit, CategoriaForm, EquipoForm
+from .forms import CustomUserCreationForm, LoginForm, TicketForm, TicketFormEdit, CategoriaForm, EquipoForm, ProblemaFrecuenteForm
 from django.contrib.auth import login as django_login, authenticate
 from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth import logout as django_logout, get_user_model
 
-from .models import Categoria, Ticket, UserProfile, Rol
+from .models import Categoria, Ticket, UserProfile, Rol, Equipo, ProblemaFrecuente
 from django.views.decorators.csrf import csrf_protect
 
 # Vista para la página principal
+
+def agregar_problema(request):
+    if request.method == 'POST':
+        form = ProblemaFrecuenteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Problema frecuente agregado exitosamente.')
+            return redirect('agregar_problema')  # Redirige a la misma página o a una página de éxito
+    else:
+        form = ProblemaFrecuenteForm()
+
+    return render(request, 'agregar_problema.html', {'form': form})
+
+    
+
+def problemas(request):
+    problemas = ProblemaFrecuente.objects.all()
+    
+    # Verifica si el usuario tiene un perfil y está autenticado
+    user_profile = None
+    if request.user.is_authenticated:
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)  # Obtener el perfil del usuario actual
+        except UserProfile.DoesNotExist:
+            pass  # Maneja el caso en el que el perfil no exista
+    
+    return render(request, 'preguntas.html', {
+        'FAQ': problemas,
+        'user_profile': user_profile
+    })
+
 def edit_ticket(request, id):
     ticket = get_object_or_404(Ticket, id_ticket=id)  # Obtiene el ticket por ID
 
@@ -37,6 +68,14 @@ def index(request):
     return render(request, 'index.html')
 
 def categoria(request):
+     # Verifica si el usuario tiene un perfil y está autenticado
+    user_profile = None
+    if request.user.is_authenticated:
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)  # Obtener el perfil del usuario actual
+        except UserProfile.DoesNotExist:
+            pass  # Maneja el caso en el que el perfil no exista
+    
     if request.method == 'POST':
         form = CategoriaForm(request.POST)
         if form.is_valid():
@@ -45,7 +84,7 @@ def categoria(request):
             return redirect('categoria')  # Cambia esto según la ruta a la que quieras redirigir
     else:
         form = CategoriaForm()
-    return render(request, 'crear_categoria.html', {'form': form})
+    return render(request, 'crear_categoria.html', {'form': form, 'user_profile': user_profile})
 
 def ticket_list(request):
     tickets = Ticket.objects.all()  # Obtén todos los tickets
@@ -81,6 +120,14 @@ def inicio(request):
 
 
 def crear_equipo(request):
+     # Verifica si el usuario tiene un perfil y está autenticado
+    user_profile = None
+    if request.user.is_authenticated:
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)  # Obtener el perfil del usuario actual
+        except UserProfile.DoesNotExist:
+            pass  # Maneja el caso en el que el perfil no exista
+    
     if request.method == 'POST':
         form = EquipoForm(request.POST)
         if form.is_valid():
@@ -90,7 +137,7 @@ def crear_equipo(request):
     else:
         form = EquipoForm()
 
-    return render(request, 'crear_equipo.html', {'form': form})
+    return render(request, 'crear_equipo.html', {'form': form, 'user_profile': user_profile})
 
 
 def todo(request):
@@ -124,6 +171,15 @@ def todo(request):
 # Vista para la página de tickets
 @csrf_protect
 def tikcet(request):
+
+     # Verifica si el usuario tiene un perfil y está autenticado
+    user_profile = None
+    if request.user.is_authenticated:
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)  # Obtener el perfil del usuario actual
+        except UserProfile.DoesNotExist:
+            pass  # Maneja el caso en el que el perfil no exista
+    
     if request.method == 'POST':
         form = TicketForm(request.POST)
         if form.is_valid():
@@ -149,7 +205,7 @@ def tikcet(request):
     # Filtrar las categorías cuyo término tiene 5 letras o menos
     categorias = [cat for cat in categorias if len(cat.termino) <= 5]
 
-    return render(request, 'crear_ticket.html', {'form': form, 'categorias': categorias})
+    return render(request, 'crear_ticket.html', {'form': form, 'categorias': categorias, 'user_profile': user_profile})
 
 # Vista para iniciar sesión
 def login_view(request):
@@ -177,6 +233,14 @@ def logout(request):
 # Vista para registrar un usuario
 
 def register(request):
+     # Verifica si el usuario tiene un perfil y está autenticado
+    user_profile = None
+    if request.user.is_authenticated:
+        try:
+            user_profile = UserProfile.objects.get(user=request.user)  # Obtener el perfil del usuario actual
+        except UserProfile.DoesNotExist:
+            pass  # Maneja el caso en el que el perfil no exista
+    
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
@@ -188,9 +252,11 @@ def register(request):
                 rol = Rol.objects.get(id=rol_id)
                 user.roles.add(rol)  # Asigna el rol al usuario
             
+            messages.success(request, 'Usuario creado exitosamente.')
 
-            return redirect('login')  # Redirigir después de crear el usuario
+            form = CustomUserCreationForm()
+              # Redirigir después de crear el usuario
     else:
         form = CustomUserCreationForm()
 
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'register.html', {'form': form, 'user_profile': user_profile})

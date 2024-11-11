@@ -4,6 +4,17 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 
 # Define el modelo de usuario
+
+
+class ProblemaFrecuente(models.Model):
+    descripcion = models.CharField(max_length=255)
+    solucion = models.TextField()
+
+    def __str__(self):
+        return self.descripcion
+
+
+
 User = get_user_model()
 
 class Rol(models.Model):
@@ -26,7 +37,8 @@ class CustomUser(models.Model):
 class UserProfile(models.Model):
     ROL_CHOICES = [
         ('Tecnico', 'Técnico'),
-        ('Caja', 'Cajero'),
+        ('Cliente', 'Cliente'),
+        ('Administrador', 'Administrador'),
     ]
     
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -84,7 +96,7 @@ class Ticket(models.Model):
     estado = models.CharField(max_length=1, choices=ESTADO_CHOICES, default='P', null=False)  # Puedes mantener default='P'
     fecha_creacion = models.DateTimeField(default=timezone.now, null=False)  # No se permite nulo
     fecha_resolucion = models.DateTimeField(null=True, blank=True)  # Puede ser nulo y en blanco
-    usuario = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='tickets_usuario')  # Sin default
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='tickets_usuario')  # Sin default
     encargado = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='tickets_encargado', null=True, blank=True)
 
     def __str__(self):

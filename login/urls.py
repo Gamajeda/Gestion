@@ -13,4 +13,6 @@ urlpatterns = [
     path('todo/', views.todo, name='todo'),
     path('eliminar_ticket/<int:ticket_id>/', views.delete_ticket, name='delete_ticket'),  # Ruta para eliminar
     path('crear_equipo/', views.crear_equipo, name='crear_equipo'),
+    path('FAQ/', views.problemas, name='FAQ'),
+     path('agregar_problema/', views.agregar_problema, name='agregar_problema'),
 ]

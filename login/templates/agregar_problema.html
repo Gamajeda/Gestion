@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titulo %}Agregar pregunta{% endblock %}
+{% block contenido %}
+<h1>Agregar Problema Frecuente</h1>
+
+<form method="POST">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Agregar Problema</button>
+</form>
+{% endblock %}

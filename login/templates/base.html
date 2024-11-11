@@ -22,14 +22,19 @@
                 
                 <!-- Si el usuario está autenticado -->
                 {% if user.is_authenticated %}
+                
                 <a class="nav-item nav-link active" href="{% url 'inicio' %}" aria-current="page">
                     Inicio <span class="visually-hidden">(current)</span></a>
                     <a class="nav-item nav-link" href="{% url 'tikcet' %}">Ticket</a>
+                    <a class="nav-item nav-link active" href="{% url 'FAQ' %}" aria-current="page">
+                        Preguntas </a>
+                    {% if user_profile.rol_id == 3 %}
                     <a class="nav-item nav-link" href="{% url 'crear_equipo' %}">Equipo</a>
+                    <a class="nav-item nav-link" href="{% url 'register' %}">Registro</a>
+                    {% endif %}
                     <a class="nav-item nav-link" href="{% url 'logout' %}">LogOut</a>
                 <!-- Si el usuario NO está autenticado -->
                 {% else %}
-                    <a class="nav-item nav-link" href="{% url 'register' %}">Registro</a>
                     <a class="nav-item nav-link" href="{% url 'login' %}">LogIn</a>
                 {% endif %}
             </div>

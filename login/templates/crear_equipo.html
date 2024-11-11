@@ -2,7 +2,7 @@
 {% block titulo %}Equipo{% endblock %}
 {% block contenido %}
 <body>
-    <h2>Registrate</h2>
+    <h2>Registra</h2>
 
     <!-- Mensajes de error -->
     {% if messages %}
@@ -14,7 +14,6 @@
     {% endif %}
 
     <!-- Formulario de login -->
-    <h2>Register</h2>
 <form method="POST">
     {% csrf_token %}
     {{ form.as_p }}

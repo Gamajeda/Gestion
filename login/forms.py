@@ -1,10 +1,16 @@
 from django import forms
-from .models import Ticket, Categoria, UserProfile, Rol, Equipo
+from .models import Ticket, Categoria, UserProfile, Rol, Equipo, ProblemaFrecuente
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 
 # Formulario para crear una categoría
+
+class ProblemaFrecuenteForm(forms.ModelForm):
+    class Meta:
+        model = ProblemaFrecuente
+        fields = ['descripcion', 'solucion']
+
 User=get_user_model()
 
 
@@ -54,6 +60,7 @@ class TicketForm(forms.ModelForm):
         super(TicketForm, self).__init__(*args, **kwargs)
         self.fields['usuario'].queryset = UserProfile.objects.all()  # Muestra todos los usuarios
         self.fields['equipo'].queryset = Equipo.objects.all()  # Muestra todos los equipos
+        self.fields['usuario'].queryset = get_user_model().objects.filter(id=self.initial.get('usuario', None))
         self.fields['encargado'].queryset = UserProfile.objects.filter(rol__nombre='Técnico')  # Muestra todos los roles
         
 
