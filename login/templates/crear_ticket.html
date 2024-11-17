@@ -20,7 +20,15 @@
             <form method="post">
                 {% csrf_token %}
                 {{ form.as_p }}  <!-- Renderiza los campos del formulario -->
-            
+                {% if messages %}
+                <div>
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+                {% endif %}
             
                 <button type="submit">Crear Ticket</button>
             </form>

@@ -9,7 +9,7 @@ from django.contrib.auth.forms import UserCreationForm
 class ProblemaFrecuenteForm(forms.ModelForm):
     class Meta:
         model = ProblemaFrecuente
-        fields = ['descripcion', 'solucion']
+        fields = ['titulo','problema', 'solucion']
 
 User=get_user_model()
 
@@ -34,17 +34,7 @@ class CategoriaForm(forms.ModelForm):
 class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = ['titulo', 'descripcion' ,'estado' , 'prioridad', 'categoria', 'equipo' , 'usuario', 'encargado']  # Eliminado 'encargado'
-        labels = {
-            'titulo': 'Título',
-            'descripcion': 'Descripción',
-            'estado': 'Estado',
-            'prioridad': 'Prioridad',
-            'categoria': 'Categoría',
-            'equipo': 'Equipo',
-            'usuario': 'Usuario',
-            'encargado': 'Encargado'
-        }
+        fields = ['titulo', 'descripcion', 'estado', 'prioridad', 'categoria', 'equipo', 'usuario', 'encargado']
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
@@ -57,12 +47,25 @@ class TicketForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super(TicketForm, self).__init__(*args, **kwargs)
-        self.fields['usuario'].queryset = UserProfile.objects.all()  # Muestra todos los usuarios
         self.fields['equipo'].queryset = Equipo.objects.all()  # Muestra todos los equipos
-        self.fields['usuario'].queryset = get_user_model().objects.filter(id=self.initial.get('usuario', None))
+        self.fields['estado'].initial = 'Pendiente'  # Establece el estado inicial en 'Pendiente'
+        self.fields['estado'].widget.attrs['disabled'] = True  # Hace que el campo sea de solo lectura
+        self.fields['prioridad'].widget.attrs['disabled'] = True  # Establece la prioridad inicial en 'Baja'
+        self.fields['categoria'].widget.attrs['disabled'] = True  # Hace que el campo sea de solo lectura
         self.fields['encargado'].queryset = UserProfile.objects.filter(rol__nombre='Técnico')  # Muestra todos los roles
-        
+        self.fields['encargado'].widget.attrs['disabled'] = True
+
+        if user:
+            self.fields['usuario'].queryset = UserProfile.objects.filter(user=user)  # Filtra por el usuario en sesión
+            if not user.is_staff:  # Si el usuario no es administrador
+                self.fields.pop('estado')
+                self.fields.pop('prioridad')
+                self.fields.pop('categoria')
+                self.fields.pop('encargado')
+        else:
+            self.fields['usuario'].queryset = UserProfile.objects.none() 
 
 
 
@@ -72,23 +75,30 @@ class TicketForm(forms.ModelForm):
 class TicketFormEdit(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = ['titulo', 'descripcion', 'prioridad', 'categoria', 'fecha_resolucion', 'estado']  # Cambia 'fecha' a 'fecha_resolucion'
+        fields = ['titulo', 'descripcion', 'prioridad', 'categoria', 'fecha_resolucion', 'estado', 'encargado', 'comentarios']  # Agrega 'encargado'
         labels = {
             'titulo': 'Título',
             'descripcion': 'Descripción',
             'prioridad': 'Prioridad',
             'categoria': 'Categoría',
-            'fecha_resolucion': 'Fecha de Resolución',  # Agrega una etiqueta para el nuevo campo
-            'estado': 'Estado'
+            'fecha_resolucion': 'Fecha de Resolución',
+            'estado': 'Estado',
+            'encargado': 'Encargado',  # Agrega una etiqueta para el nuevo campo
+            'comentarios': 'Comentarios'  # Agrega una etiqueta para el nuevo campo
         }
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
             'prioridad': forms.Select(attrs={'class': 'form-control'}),
-            'categoria': forms.Select(attrs={'class': 'form-control'}),
-            'fecha_resolucion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),  # Agrega el widget de fecha
+            'fecha_resolucion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'estado': forms.Select(attrs={'class': 'form-control'}),
+            'encargado': forms.Select(attrs={'class': 'form-control'}),  # Agrega el widget para 'encargado'
+            'comentarios': forms.Textarea(attrs={'class': 'form-control'}),  # Agrega el widget para 'comentarios'
         }
+
+    def __init__(self, *args, **kwargs):
+        super(TicketFormEdit, self).__init__(*args, **kwargs)
+        self.fields['encargado'].queryset = UserProfile.objects.filter(rol__nombre='Técnico')  # Filtra solo técnicos
 # Formulario para registrar un usuario
 
 class CustomUserCreationForm(UserCreationForm):
@@ -145,30 +155,25 @@ class LoginForm(forms.Form):
 class EquipoForm(forms.ModelForm):
     class Meta:
         model = Equipo
-        fields = ['nombre', 'descripcion', 'fecha_adquisicion', 'estado', 'marca', 'modelo', 'numero_serie', 'categoria', 'ubicacion', 'fecha_ultimo_mantenimiento', 'proximo_mantenimiento']
+        fields = ['nombre', 'estado', 'numero_serie', 'ubicacion']
         labels = {
             'nombre': 'Nombre del Aparato',
-            'descripcion': 'Descripción',
-            'fecha_adquisicion': 'Fecha de Adquisición',
             'estado': 'Estado',
-            'marca': 'Marca',
-            'modelo': 'Modelo',
             'numero_serie': 'Número de Serie',
-            'categoria': 'Categoría',
             'ubicacion': 'Ubicación',
-            'fecha_ultimo_mantenimiento': 'Último Mantenimiento',
-            'proximo_mantenimiento': 'Próximo Mantenimiento',
         }
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
-            'fecha_adquisicion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
             'estado': forms.Select(attrs={'class': 'form-control'}),
-            'marca': forms.TextInput(attrs={'class': 'form-control'}),
-            'modelo': forms.TextInput(attrs={'class': 'form-control'}),
             'numero_serie': forms.TextInput(attrs={'class': 'form-control'}),
-            'categoria': forms.TextInput(attrs={'class': 'form-control'}),
             'ubicacion': forms.TextInput(attrs={'class': 'form-control'}),
-            'fecha_ultimo_mantenimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'proximo_mantenimiento': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+        }
+
+
+class UserProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['foto']
+        widgets = {
+            'foto': forms.FileInput(attrs={'class': 'form-control'}),
         }

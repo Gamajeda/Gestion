@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block titulo %}Calificar Trabajo{% endblock %}
+{% block contenido %}
+<div class="container mt-4">
+    <h1 class="mb-4">Calificar Trabajo</h1>
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ ticket.titulo }}</h2>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Descripción</h5>
+            <p class="card-text">{{ ticket.descripcion }}</p>
+            <h5 class="card-title">Solución</h5>
+            <p class="card-text">{{ ticket.comentarios }}</p>
+            <h5 class="card-title">Calificación</h5>
+            <form method="post" action="{% url 'calificar_trabajo' ticket.id_ticket %}">
+                {% csrf_token %}
+                <div class="star-rating">
+                    {% for i in "54321" %}
+                        <input type="radio" id="star{{ i }}" name="calificacion" value="{{ i }}">
+                        <label for="star{{ i }}" title="{{ i }} estrellas">&#9733;</label>
+                    {% endfor %}
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Enviar Calificación</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<style>
+    .star-rating {
+        direction: rtl;
+        display: inline-block;
+        font-size: 2em;
+    }
+    .star-rating input[type="radio"] {
+        display: none;
+    }
+    .star-rating label {
+        color: #ddd;
+        cursor: pointer;
+    }
+    .star-rating input[type="radio"]:checked ~ label {
+        color: #f5b301;
+    }
+    .star-rating label:hover,
+    .star-rating label:hover ~ label {
+        color: #f5b301;
+    }
+</style>
+{% endblock %}

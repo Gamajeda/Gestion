@@ -1,98 +1,69 @@
-
 {% extends "base.html" %}
 {% block titulo %}Inicio{% endblock %}
 {% block contenido %}
-    <!-- Barra de navegación -->
-    <div class="barra-lateral" id="barra-lateral">
-        <div class="contenedor-barra-lateral" id="contenedor-barra-lateral">
-            <img src="/imagenes/usuario.png" alt="Logo de usuario" class="imagen-usuario">    
-            <p class="texto-usuario" id="texto-usuario">{{ user.user }}<br><br>{{ user.userprofile.role }}</p>    
-            <hr class="linea-decorativa">                
-            
-            <!-- Menú de navegación en la barra lateral -->
-            <ul class="menu-lateral">
-                <!-- Enlaces a diferentes secciones del sistema -->
-                <li><a href="{% url 'categoria' %}" class="menu-opcion">Crear categoria</a></li>
-                <li><a href="{% url 'tikcet' %}" class="menu-opcion">Crear Ticket</a></li>
-                <li><a href="{% url 'todo' %}" class="menu-opcion" id="mostrar-todos">Tickets Resueltos</a></li>
-                <li><a href="{% url 'inicio' %}" class="menu-opcion" id="tickets-en-progreso">Tickets en Progreso</a></li>
-                
-            </ul>
-        </div>
-    </div>
-
-    <!-- Contenedor principal que muestra el contenido de los tickets -->
-    <div class="contenedor-principal" id="contenedor-principal"> 
-        <!-- Contenedor principal con los tickets -->
-        <main class="main-principal" id="main-principal">
-            <!-- Campo de búsqueda para encontrar tickets -->
+<div class="container mt-4">
+    <h1 class="mb-4">Historial de Tickets</h1>
+    <div class="informacion-usuario mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <span>Usuario: <strong>{{ user.username }}</strong></span>
+                <span>Rol: <strong>{{ user_profile.rol.nombre }}</strong></span>
+            </div>
             <div class="contenedor-buscar">
-                <form method="get" action="{% url 'inicio' %}">  <!-- Asegúrate de que la URL esté correctamente configurada -->
-                    <input type="text" name="buscar" placeholder="Buscar ticket..." class="buscar-ticket">
-                    <button type="submit" class="btn btn-secondary">Buscar</button>  <!-- Agregué un botón para enviar la búsqueda -->
+                <form method="get" action="{% url 'inicio' %}">
+                    <input type="text" name="buscar" placeholder="Buscar ticket..." class="form-control d-inline-block w-auto">
+                    <button type="submit" class="btn btn-secondary">Buscar</button>
                 </form>
             </div>
-            
-            
-
-            <!-- Cabecera principal con el título del sistema -->
-            <header id="header" class="header">
-                <h1>Sistema de tickets</h1>
-                <br>
-                <!-- Información del usuario logueado -->
-                <div class="informacion-usuario">
-                    <span>Usuario: <strong>{{ user.username }}</strong></span>
-                    <span>Rol: <strong>{{ user_profile.rol.nombre }}</strong></span>
-                </div>
-            </header>
-
-            <!-- Tabla que muestra los tickets -->
-            <section class="tabla-tickets">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Encargado</th>
-                            <th>ID Ticket</th>
-                            <th>Problema</th>
-                            <th>Descripción</th>
-                            <th>Estado</th>
-                            <th>Fecha de Creación</th>
-                            <th>Fecha de Solución</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for ticket in tickets %}
-                            <tr>
-                                <td>{{ ticket.encargado }}</td>
-                                <td>{{ ticket.id_ticket }}</td>
-                                <td>{{ ticket.titulo }}</td>
-                                <td>{{ ticket.descripcion }}</td>
-                                <td>{{ ticket.get_estado_display }}</td>
-                                <td>{{ ticket.fecha_creacion }}</td>
-                                <td>{{ ticket.fecha_resolucion }}</td>
-                                <td>
-                                    {% if user_profile and user_profile == ticket.encargado %}
-                                    <a href="{% url 'edit_ticket' ticket.id_ticket %}" class="btn btn-primary">Editar</a>
-                                    <form action="{% url 'delete_ticket' ticket.id_ticket %}" method="post" style="display:inline;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                                    </form>
-                                {% else %}
-                                    <span>No tienes permisos para editar o eliminar.</span>
-                                {% endif %}
-                                </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="8">No hay tickets disponibles.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </section>
-            
-
-        </main>
+        </div>
+        <ul class="nav nav-pills mt-3">
+            {% if user_profile.rol_id == 1 or user_profile.rol_id == 3 %}
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'categoria' %}">Crear Categoría</a>
+                </li>
+            {% endif %}
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'tikcet' %}">Crear Ticket</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'todo' %}">Tickets Resueltos</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'all' %}">Todos los Tickets</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'inicio' %}">Tickets en Progreso</a>
+            </li>
+        </ul>
     </div>
-    {% endblock %}
+    <!-- Tabla que muestra los tickets -->
+    <section class="tabla-tickets">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Encargado</th>
+                    <th>ID Ticket</th>
+                    <th>Problema</th>
+                    <th>Descripción</th>
+                    <th>Estado</th>
+                    <th>Fecha de Creación</th>
+                    <th>Fecha de Solución</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ticket in tickets %}
+                    <tr>
+                        <td>{{ ticket.encargado }}</td>
+                        <td>{{ ticket.id_ticket }}</td>
+                        <td>{{ ticket.problema }}</td>
+                        <td>{{ ticket.descripcion }}</td>
+                        <td>{{ ticket.estado }}</td>
+                        <td>{{ ticket.fecha_creacion }}</td>
+                        <td>{{ ticket.fecha_solucion }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </section>
+</div>
+{% endblock %}

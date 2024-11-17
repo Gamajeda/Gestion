@@ -1,0 +1,23 @@
+
+{% load static %}
+{% block titulo %}Menu{% endblock %}
+{% block contenido %}
+<body>
+    <!-- Encabezado con el nombre del usuario y su foto -->
+    <header class="d-flex align-items-center p-3 bg-light">
+        {% if user_profile.foto %}
+            <img src="{{ user_profile.foto.url }}" alt="Foto de perfil" class="rounded-circle" width="50" height="50">
+        {% else %}
+            <img src="{% static 'images/default_profile.png' %}" alt="Foto de perfil" class="rounded-circle" width="50" height="50">
+        {% endif %}
+        <h2 class="ms-3">{{ user_profile.user.username }}</h2>
+    </header>
+
+    <!-- Botones de navegación -->
+    <div class="nav flex-column">
+        <a class="nav-item nav-link" href="{% url 'preguntas' %}">Preguntas FAQ</a>
+        <a class="nav-item nav-link" href="{% url 'tikcet' %}">Generar Ticket</a>
+        <a class="nav-item nav-link" href="{% url 'inicio' %}">Historial Ticket</a>
+    </div>
+</body>
+{% endblock %}

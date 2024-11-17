@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load static %}
+{% block titulo %}Editar Perfil{% endblock %}
+{% block contenido %}
+<div class="container mt-4">
+    <h1 class="mb-4">Editar Perfil</h1>
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ user.username }}</h2>
+        </div>
+        <div class="card-body">
+            <!-- Mostrar la foto de perfil actual -->
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    {% if user_profile.foto %}
+                        <img src="{{ user_profile.foto.url }}" alt="Foto de perfil" class="img-fluid rounded-circle">
+                    {% else %}
+                        <img src="{% static 'images/default_profile.png' %}" alt="Foto de perfil" class="img-fluid rounded-circle">
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Formulario para actualizar el perfil -->
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="foto">Foto de Perfil</label>
+                    {{ profile_form.foto }}
+                </div>
+                <button type="submit" class="btn btn-primary mt-2">Actualizar Perfil</button>
+            </form>
+            <hr>
+            <!-- Formulario para cambiar la contraseña -->
+            <h3>Cambiar Contraseña</h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ password_form.as_p }}
+                <button type="submit" class="btn btn-primary mt-2">Actualizar Contraseña</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

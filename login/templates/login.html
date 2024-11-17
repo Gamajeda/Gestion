@@ -22,4 +22,26 @@
 
 </body>
     <!-- Mensajes de error -->
+    <style>
+        .fade-out {
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+        .fade-out.hidden {
+            opacity: 0;
+        }
+    </style>
+
+    <script>
+        // Oculta los mensajes después de 5 segundos
+        setTimeout(function() {
+            var messages = document.getElementById('messages');
+            if (messages) {
+                messages.classList.add('hidden');
+                setTimeout(function() {
+                    messages.style.display = 'none';
+                }, 1000); // Espera a que la transición termine antes de ocultar completamente
+            }
+        }, 5000); // 5000 milisegundos = 5 segundos
+    </script>
 {% endblock %}

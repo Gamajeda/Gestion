@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block titulo %}Detalle del Ticket{% endblock %}
+{% block contenido %}
+<div class="container mt-4">
+    <h1 class="mb-4">Detalle del Ticket</h1>
+    <div class="card">
+        <div class="card-header">
+            <h2>{{ ticket.titulo }}</h2>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Descripción</h5>
+            <p class="card-text">{{ ticket.descripcion }}</p>
+            <h5 class="card-title">Estado</h5>
+            <p class="card-text">{{ ticket.estado }}</p>
+            <h5 class="card-title">Prioridad</h5>
+            <p class="card-text">{{ ticket.prioridad }}</p>
+            <h5 class="card-title">Equipo</h5>
+            <p class="card-text">{{ ticket.equipo }}</p>
+            <h5 class="card-title">Usuario</h5>
+            <p class="card-text">{{ ticket.usuario }}</p>
+            <h5 class="card-title">Encargado</h5>
+            <p class="card-text">{{ ticket.encargado }}</p>
+            <h5 class="card-title">Categoría</h5>
+            <p class="card-text">{{ ticket.categoria }}</p>
+            <h5 class="card-title">Comentarios</h5>
+            <p class="card-text">{{ ticket.comentarios }}</p>
+            <h5 class="card-title">Calificación</h5>
+            <p class="card-text">
+                {% if ticket.calificacion %}
+                    <div class="star-rating">
+                        {% for i in "12345" %}
+                            <span class="star {% if i <= ticket.calificacion %}filled{% endif %}">&#9733;</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    No calificado
+                {% endif %}
+            </p>
+            <a href="{% url 'inicio' %}" class="btn btn-secondary">Volver</a>
+            {% if user_profile.rol.nombre == 'Administrador' or user_profile.rol.nombre == 'Técnico' %}
+                <a href="{% url 'editar_ticket' ticket.id_ticket %}" class="btn btn-primary">Editar</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .star-rating {
+        display: inline-block;
+        font-size: 1.5em;
+        color: #FFDE59;
+    }
+    .star-rating .star {
+        cursor: default;
+    }
+    .star-rating .star.filled {
+        color: #f5b301;
+    }
+</style>
+{% endblock %}

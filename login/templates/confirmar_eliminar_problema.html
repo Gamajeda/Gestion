@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block titulo %}Eliminar Problema{% endblock %}
+{% block contenido %}
+<h1>Eliminar Problema: {{ problema.descripcion }}</h1>
+<p>¿Estás seguro de que deseas eliminar este problema?</p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Eliminar</button>
+    <a href="{% url 'preguntas' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

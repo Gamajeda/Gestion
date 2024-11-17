@@ -2,16 +2,54 @@
 {% block titulo %}Preguntas Frecuentes{% endblock %}
 {% block contenido %}
 <h1>Problemas Comunes con el Equipo</h1>
-    {% if user_profile.rol_id == 3 %}
+    {% if messages %}
+        <div id="messages">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% if user_profile.rol.nombre == 'Administrador' %}
         <a href="{% url 'agregar_problema' %}" class="btn btn-primary">Agregar Problema</a>
     {% endif %}
-<div class="problemas">
-    
-    {% for problema in problemas %}
-        <div class="problema-item">
-            <h3>{{ problema.titulo }}</h3>
-            <p>{{ problema.descripcion }}</p>
-        </div>
-    {% endfor %}
-</div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Problema</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for problema in problemas %}
+                <tr>
+                    <td><a href="{% url 'detalle_problema' problema.id %}">{{ problema.titulo }}</a></td>
+                    
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <style>
+        .fade-out {
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+        .fade-out.hidden {
+            opacity: 0;
+        }
+    </style>
+
+    <script>
+        // Oculta los mensajes después de 5 segundos
+        setTimeout(function() {
+            var messages = document.getElementById('messages');
+            if (messages) {
+                messages.classList.add('hidden');
+                setTimeout(function() {
+                    messages.style.display = 'none';
+                }, 1000); // Espera a que la transición termine antes de ocultar completamente
+            }
+        }, 5000); // 5000 milisegundos = 5 segundos
+    </script>
 {% endblock %}
