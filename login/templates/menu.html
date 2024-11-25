@@ -1,23 +1,97 @@
-
 {% load static %}
-{% block titulo %}Menu{% endblock %}
-{% block contenido %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>si</title>
+    <link rel="stylesheet" href="{% static 'css/stylemenu.css' %}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        header {
+    background-color: #343a40;
+    color: #fff;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid #495057;
+    width: 30%; /* Adjust the width as needed */
+    max-width: 800px; /* Set a maximum width for responsiveness */
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 0 auto; /* Center the header horizontally */
+    border-radius: 10px; /* Round the corners by 10 pixels */
+}
+        header img {
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+        }
+
+        header h2 {
+            margin-left: 15px;
+            font-size: 1.5em;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .list-group {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        .list-group-item {
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            padding: 15px;
+            font-size: 1.2em;
+            color: #343a40;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s ease;
+        }
+
+        .list-group-item:hover {
+            background-color: #e9ecef;
+        }
+    </style>
+</head>
 <body>
     <!-- Encabezado con el nombre del usuario y su foto -->
-    <header class="d-flex align-items-center p-3 bg-light">
+    <header>
         {% if user_profile.foto %}
-            <img src="{{ user_profile.foto.url }}" alt="Foto de perfil" class="rounded-circle" width="50" height="50">
+            <img src="{{ user_profile.foto.url }}" alt="Foto de perfil">
         {% else %}
-            <img src="{% static 'images/default_profile.png' %}" alt="Foto de perfil" class="rounded-circle" width="50" height="50">
+            <img src="{% static 'images/default_profile.png' %}" alt="Foto de perfil">
         {% endif %}
-        <h2 class="ms-3">{{ user_profile.user.username }}</h2>
+        <h2>{{ user_profile.user.username }}</h2>
     </header>
 
     <!-- Botones de navegación -->
-    <div class="nav flex-column">
-        <a class="nav-item nav-link" href="{% url 'preguntas' %}">Preguntas FAQ</a>
-        <a class="nav-item nav-link" href="{% url 'tikcet' %}">Generar Ticket</a>
-        <a class="nav-item nav-link" href="{% url 'inicio' %}">Historial Ticket</a>
+    <div class="container">
+        <div class="list-group">
+            <a class="list-group-item" href="{% url 'preguntas' %}">Preguntas FAQ</a>
+            <a class="list-group-item" href="{% url 'tikcet' %}">Generar Ticket</a>
+            <a class="list-group-item" href="{% url 'inicio' %}">Historial Ticket</a>
+        </div>
     </div>
 </body>
-{% endblock %}
+</html>

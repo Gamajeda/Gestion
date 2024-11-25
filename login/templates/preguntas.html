@@ -1,55 +1,49 @@
 {% extends "base.html" %}
+
 {% block titulo %}Preguntas Frecuentes{% endblock %}
+
 {% block contenido %}
-<h1>Problemas Comunes con el Equipo</h1>
-    {% if messages %}
-        <div id="messages">
-            {% for message in messages %}
-                <div class="alert alert-{{ message.tags }}">
-                    {{ message }}
-                </div>
-            {% endfor %}
+<div class="container mt-5">
+  <h1 class="mb-4">Problemas Comunes con el Equipo</h1>
+  
+  {% if messages %}
+    <div id="messages">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-    {% endif %}
-    {% if user_profile.rol.nombre == 'Administrador' %}
-        <a href="{% url 'agregar_problema' %}" class="btn btn-primary">Agregar Problema</a>
-    {% endif %}
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Problema</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for problema in problemas %}
-                <tr>
-                    <td><a href="{% url 'detalle_problema' problema.id %}">{{ problema.titulo }}</a></td>
-                    
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+      {% endfor %}
+    </div>
+  {% endif %}
+  
+  {% if user_profile.rol.nombre == 'Administrador' %}
+    <a href="{% url 'agregar_problema' %}" class="btn btn-primary mb-3">Agregar Problema</a>
+  {% endif %}
+  
+  <div class="card">
+    <div class="card-header bg-dark text-white">
+      Problemas
+    </div>
+    <ul class="list-group list-group-flush">
+      {% for problema in problemas %}
+        <li class="list-group-item">
+          <a href="{% url 'detalle_problema' problema.id %}" class="text-decoration-none text-dark">{{ problema.titulo }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+</div>
 
-    <style>
-        .fade-out {
-            opacity: 1;
-            transition: opacity 1s ease-out;
-        }
-        .fade-out.hidden {
-            opacity: 0;
-        }
-    </style>
+<style>
+  .list-group-item a {
+    color: inherit; /* Hereda el color del elemento padre */
+    text-decoration: none; /* Elimina el subrayado */
+  }
 
-    <script>
-        // Oculta los mensajes después de 5 segundos
-        setTimeout(function() {
-            var messages = document.getElementById('messages');
-            if (messages) {
-                messages.classList.add('hidden');
-                setTimeout(function() {
-                    messages.style.display = 'none';
-                }, 1000); // Espera a que la transición termine antes de ocultar completamente
-            }
-        }, 5000); // 5000 milisegundos = 5 segundos
-    </script>
+  .list-group-item a:hover {
+    color: #343a40; /* Color al pasar el ratón por encima */
+    text-decoration: underline; /* Subrayado al pasar el ratón por encima */
+  }
+</style>
 {% endblock %}

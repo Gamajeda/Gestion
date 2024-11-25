@@ -1,60 +1,114 @@
 {% extends "base.html" %}
 {% block titulo %}Detalle del Ticket{% endblock %}
 {% block contenido %}
-<div class="container mt-4">
-    <h1 class="mb-4">Detalle del Ticket</h1>
-    <div class="card">
-        <div class="card-header">
-            <h2>{{ ticket.titulo }}</h2>
-        </div>
-        <div class="card-body">
-            <h5 class="card-title">Descripción</h5>
-            <p class="card-text">{{ ticket.descripcion }}</p>
-            <h5 class="card-title">Estado</h5>
-            <p class="card-text">{{ ticket.estado }}</p>
-            <h5 class="card-title">Prioridad</h5>
-            <p class="card-text">{{ ticket.prioridad }}</p>
-            <h5 class="card-title">Equipo</h5>
-            <p class="card-text">{{ ticket.equipo }}</p>
-            <h5 class="card-title">Usuario</h5>
-            <p class="card-text">{{ ticket.usuario }}</p>
-            <h5 class="card-title">Encargado</h5>
-            <p class="card-text">{{ ticket.encargado }}</p>
-            <h5 class="card-title">Categoría</h5>
-            <p class="card-text">{{ ticket.categoria }}</p>
-            <h5 class="card-title">Comentarios</h5>
-            <p class="card-text">{{ ticket.comentarios }}</p>
-            <h5 class="card-title">Calificación</h5>
-            <p class="card-text">
-                {% if ticket.calificacion %}
-                    <div class="star-rating">
-                        {% for i in "12345" %}
-                            <span class="star {% if i <= ticket.calificacion %}filled{% endif %}">&#9733;</span>
-                        {% endfor %}
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Detalle del Ticket</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    Información del Ticket
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Título</h5>
+                    <p class="card-text">{{ ticket.titulo }}</p>
+                    <h5 class="card-title">Descripción</h5>
+                    <p class="card-text">{{ ticket.descripcion }}</p>
+                    <h5 class="card-title">Prioridad</h5>
+                    <p class="card-text">{{ ticket.get_prioridad_display }}</p>
+                    <h5 class="card-title">Estado</h5>
+                    <p class="card-text">{{ ticket.get_estado_display }}</p>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="card-title">Fecha de Creación</h5>
+                            <p class="card-text">{{ ticket.fecha_creacion }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5 class="card-title">Fecha de Solución</h5>
+                            <p class="card-text">{{ ticket.fecha_resolucion }}</p>
+                        </div>
                     </div>
-                {% else %}
-                    No calificado
+                    <h5 class="card-title">Equipo</h5>
+                    <p class="card-text">{{ ticket.equipo }}</p>
+                    <h5 class="card-title">Usuario</h5>
+                    <p class="card-text">{{ ticket.usuario }}</p>
+                    <h5 class="card-title">Encargado</h5>
+                    <p class="card-text">{{ ticket.encargado }}</p>
+                    <h5 class="card-title">Categoría</h5>
+                    <p class="card-text">{{ ticket.categoria }}</p>
+                    <h5 class="card-title">Comentarios</h5>
+                    <p class="card-text">{{ ticket.comentarios }}</p>
+                    <h5 class="card-title">Calificación</h5>
+                    <p class="card-text">
+                        {% if ticket.calificacion %}
+                            <div class="star-rating">
+                                {% for i in estrellas %}
+                                    <span class="star {% if i <= ticket.calificacion %}filled{% endif %}">&#9733;</span>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            No calificado
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'inicio' %}" class="btn btn-secondary">Volver</a>
+                {% if user_profile.rol.nombre == 'Administrador' or user_profile.rol.nombre == 'Técnico' %}
+                    <a href="{% url 'editar_ticket' ticket.id_ticket %}" class="btn btn-primary">Editar</a>
                 {% endif %}
-            </p>
-            <a href="{% url 'inicio' %}" class="btn btn-secondary">Volver</a>
-            {% if user_profile.rol.nombre == 'Administrador' or user_profile.rol.nombre == 'Técnico' %}
-                <a href="{% url 'editar_ticket' ticket.id_ticket %}" class="btn btn-primary">Editar</a>
-            {% endif %}
+                {% if user_profile.rol.nombre == 'Administrador' %}
+                    <form method="post" action="{% url 'eliminar_ticket' ticket.id_ticket %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                {% endif %}
+            </div>
         </div>
     </div>
 </div>
 
 <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        margin-top: 20px;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .btn {
+        font-size: 1em;
+    }
+
     .star-rating {
         display: inline-block;
         font-size: 1.5em;
-        color: #FFDE59;
+        color: #eee56c;
     }
+
     .star-rating .star {
         cursor: default;
     }
+
     .star-rating .star.filled {
-        color: #f5b301;
+        color: #cf9500;
     }
 </style>
 {% endblock %}

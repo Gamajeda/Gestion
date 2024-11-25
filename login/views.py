@@ -1,16 +1,92 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import CustomUserCreationForm, LoginForm, TicketForm, TicketFormEdit, CategoriaForm, EquipoForm, ProblemaFrecuenteForm, UserProfileForm
+from .forms import CustomUserCreationForm, LoginForm, TicketForm, TicketFormEdit, CategoriaForm, EquipoForm, ProblemaFrecuenteForm, UserProfileForm, CalificacionForm
 from django.contrib.auth import login as django_login, authenticate, update_session_auth_hash
 from django.db.models import Q
 from django.contrib import messages
+from datetime import datetime
+import json
+from django.db.models.functions import ExtractMonth
 from django.contrib.auth import logout as django_logout, get_user_model
 from django.utils import timezone
-from .models import Categoria, Ticket, UserProfile, Rol, Equipo, ProblemaFrecuente
+from django.db.models import Count
+from .models import Categoria, Ticket, UserProfile, Rol, Equipo, ProblemaFrecuente, Calificacion
 from django.views.decorators.csrf import csrf_protect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
-
+from django.http import JsonResponse
+from django.db import models  # Importa models
 # Vista para la página principal
+
+def graficas(request):
+    # Obtener el año actual
+    current_year = datetime.now().year
+
+    # Obtener todos los perfiles de usuario
+    usuarios = UserProfile.objects.all()
+
+    # Obtener el perfil de usuario seleccionado
+    usuario_id = request.GET.get('usuario')
+    if usuario_id:
+        user_profile = UserProfile.objects.get(id=usuario_id)
+    else:
+        user_profile = request.user.userprofile
+
+    # Obtener los datos de tickets creados, resueltos y pendientes por mes para el usuario seleccionado
+    tickets_creados = Ticket.objects.filter(fecha_creacion__year=current_year, usuario=user_profile).annotate(month=ExtractMonth('fecha_creacion')).values('month').annotate(count=Count('id_ticket')).order_by('month')
+    tickets_resueltos = Ticket.objects.filter(fecha_resolucion__year=current_year, estado='R', encargado=user_profile).annotate(month=ExtractMonth('fecha_resolucion')).values('month').annotate(count=Count('id_ticket')).order_by('month')
+    tickets_pendientes = Ticket.objects.filter(fecha_creacion__year=current_year, estado='P', usuario=user_profile).annotate(month=ExtractMonth('fecha_creacion')).values('month').annotate(count=Count('id_ticket')).order_by('month')
+
+    # Crear listas para los datos
+    labels = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre']
+    data_creados = [0] * 12
+    data_resueltos = [0] * 12
+    data_pendientes = [0] * 12
+
+    for ticket in tickets_creados:
+        data_creados[ticket['month'] - 1] = ticket['count']
+
+    for ticket in tickets_resueltos:
+        data_resueltos[ticket['month'] - 1] = ticket['count']
+
+    for ticket in tickets_pendientes:
+        data_pendientes[ticket['month'] - 1] = ticket['count']
+
+    return render(request, 'graficas.html', {
+        'usuarios': usuarios,
+        'selected_usuario': user_profile,
+        'labels': labels,
+        'data_creados': data_creados,
+        'data_resueltos': data_resueltos,
+        'data_pendientes': data_pendientes,
+    })
+
+
+@login_required
+def calificar_problema(request, id):
+    problema = get_object_or_404(ProblemaFrecuente, id=id)
+    usuario = request.user
+    user_profile = UserProfile.objects.get(user=request.user)
+
+    if request.method == 'POST':
+        form = CalificacionForm(request.POST)
+        if form.is_valid():
+            calificacion = form.save(commit=False)
+            calificacion.problema = problema
+            calificacion.usuario = usuario
+            calificacion.save()
+
+            # Actualizar el promedio de calificaciones
+            calificaciones = Calificacion.objects.filter(problema=problema)
+            promedio = calificaciones.aggregate(models.Avg('calificacion'))['calificacion__avg']
+            problema.promedio_calificacion = promedio
+            problema.save()
+
+            messages.success(request, 'Gracias por calificar el problema.')
+            return redirect('detalle_problema', id=id)
+    else:
+        form = CalificacionForm()
+
+    return render(request, 'calificar_problema.html', {'form': form, 'problema': problema, 'user_profile': user_profile})
 
 @login_required
 def editar_perfil(request):
@@ -53,27 +129,54 @@ def perfil(request):
         'user_profile': user_profile
     })
 
+
+@login_required
 def calificar_trabajo(request, id):
     ticket = get_object_or_404(Ticket, id_ticket=id)
-    
+    user = request.user
+
     # Verificar si el usuario actual es el creador del ticket
-    if ticket.usuario != request.user.userprofile:
-        messages.error(request, 'No tienes permiso para calificar este ticket.')
+    if ticket.usuario.user.id != user.id:
+        messages.error(request, 'No puedes calificar un ticket que no te pertenece.')
+        print("paso0")
         return redirect('inicio')
-    
-    # Verificar si el ticket ya ha sido calificado
-    if ticket.calificacion is not None:
-        messages.info(request, 'Este ticket ya ha sido calificado.')
-        return redirect('inicio')
-    
+
     if request.method == 'POST':
-        calificacion = request.POST.get('calificacion')
-        if calificacion:
-            ticket.calificacion = int(calificacion)
+        if 'calificacion' in request.POST:
+            print("Datos del formulario POST:", request.POST)
+            form = CalificacionForm(request.POST)
+            print("paso1")
+            if form.is_valid():
+                calificacion = form.cleaned_data['calificacion']
+                if not calificacion:  # Verifica si la calificación es vacía
+                    messages.error(request, 'Por favor, selecciona una calificación.')
+                    return render(request, 'calificar_trabajo.html', {'ticket': ticket, 'form': form})
+                
+                ticket.calificacion = calificacion
+                ticket.save()
+                messages.success(request, 'El ticket ha sido calificado exitosamente.')
+                return redirect('inicio')
+
+
+            else:
+                print("Errores del formulario:", form.errors)
+        elif 'no_completado' in request.POST:
+            print("paso3")
+            ticket.estado = 'P'  # Cambia el estado a 'Pendiente'
             ticket.save()
-            messages.success(request, 'Gracias por calificar el trabajo.')
-            return redirect('inicio')  # Redirige a la página de inicio después de calificar
-    return render(request, 'calificar_trabajo.html', {'ticket': ticket})
+            messages.success(request, 'El estado del ticket ha sido cambiado a Pendiente.')
+            return redirect('inicio')  # Redirigir al inicio después de cambiar el estado
+
+    form = CalificacionForm()
+    return render(request, 'calificar_trabajo.html', {'ticket': ticket, 'form': form})
+
+
+
+
+
+
+
+
 def all(request):
     search_query = request.GET.get('buscar', '')  # Obtiene el término de búsqueda
     user_profile = UserProfile.objects.get(user=request.user)
@@ -119,19 +222,36 @@ def menu(request):
 
 def detalle_problema(request, id):
     problema = get_object_or_404(ProblemaFrecuente, id=id)
-    
-    if request.method == 'POST':
-        calificacion = request.POST.get('calificacion')
-        if calificacion:
-            problema.calificacion = int(calificacion)
+    usuario = request.user
+    calificacion_usuario = None
+
+    if request.user.is_authenticated:
+        calificacion_usuario = Calificacion.objects.filter(problema=problema, usuario=usuario).first()
+
+    if request.method == 'POST' and not calificacion_usuario:
+        form = CalificacionForm(request.POST)
+        if form.is_valid():
+            calificacion = form.save(commit=False)
+            calificacion.problema = problema
+            calificacion.usuario = usuario
+            calificacion.save()
+
+            # Actualizar el promedio de calificaciones
+            calificaciones = Calificacion.objects.filter(problema=problema)
+            promedio = calificaciones.aggregate(models.Avg('calificacion'))['calificacion__avg']
+            problema.promedio_calificacion = promedio
             problema.save()
-            messages.success(request, 'Calificación guardada exitosamente.')
+
+            messages.success(request, 'Gracias por calificar el problema.')
             return redirect('detalle_problema', id=id)
-    
-    user_profile = UserProfile.objects.get(user=request.user)
+    else:
+        form = CalificacionForm()
+
     return render(request, 'detalle_problema.html', {
         'problema': problema,
-        'user_profile': user_profile
+        'form': form,
+        'calificacion_usuario': calificacion_usuario,
+        'user_profile': UserProfile.objects.get(user=request.user)
     })
 
 def editar_problema(request, id):
@@ -155,17 +275,14 @@ def eliminar_problema(request, id):
     return render(request, 'confirmar_eliminar_problema.html', {'problema': problema})
 
 def ticket_detail(request, id):
-    ticket = get_object_or_404(Ticket, id_ticket=id)  # Obtiene el ticket por ID
-    user_profile = UserProfile.objects.get(user=request.user)
-    
-    # Verifica si el usuario es administrador o técnico
-    is_admin = user_profile.rol.nombre == 'Administrador'
-    is_technician = user_profile.rol.nombre == 'Técnico'
+    ticket = get_object_or_404(Ticket, id_ticket=id)  # Obtienes el ticket
+    user_profile = UserProfile.objects.get(user=request.user)  # Obtienes el perfil del usuario
+    estrellas = range(1, 6)  # Rango de estrellas para la calificación (1 a 5)
 
     return render(request, 'ticket.html', {
-        'ticket': ticket,
-        'is_admin': is_admin,
-        'is_technician': is_technician
+        'ticket': ticket, 
+        'user_profile': user_profile,
+        'estrellas': estrellas,  # Pasamos el rango de estrellas a la plantilla
     })
 
 def editar_ticket(request, id):
@@ -246,22 +363,33 @@ def ticket_list(request):
  # Pasa los tickets al template
 
 # Vista para la página de inicio
-@csrf_protect
+@login_required
 def inicio(request):
     user_profile = UserProfile.objects.get(user=request.user)
-    
+
+    # Actualiza los tickets con calificación vacía a None directamente en la base de datos
+    Ticket.objects.filter(calificacion='0').update(calificacion=None)
+
     # Verificar si hay tickets resueltos sin calificar para el usuario actual
-    tickets_sin_calificar = Ticket.objects.filter(usuario=user_profile, estado='R', calificacion__isnull=True)
+    tickets_sin_calificar = Ticket.objects.filter(calificacion__isnull=True)
+    
+    # Depuración: Imprimir los tickets sin calificar
+    print(tickets_sin_calificar)
+
     if tickets_sin_calificar.exists():
-        return redirect('calificar_trabajo', id=tickets_sin_calificar.first().id_ticket)
+        # Si existen tickets sin calificar, redirigir a la página de calificación del primero
+        ticket_a_calificar = tickets_sin_calificar.first()  # Obtiene el primer ticket sin calificar
+        return redirect('calificar_trabajo', id=ticket_a_calificar.id_ticket)
     
+    # Si no hay tickets sin calificar, seguir con el flujo normal
     if user_profile.rol.nombre == 'Cliente':
-        tickets = Ticket.objects.filter(usuario=user_profile, estado='P')
+        tickets = Ticket.objects.filter(usuario=user_profile, estado='R')
     elif user_profile.rol.nombre == 'Técnico':
-        tickets = Ticket.objects.filter(encargado=user_profile, estado='P')
+        tickets = Ticket.objects.filter(encargado=user_profile, estado='R')
     else:
-        tickets = Ticket.objects.filter(estado='P')
-    
+        tickets = Ticket.objects.filter(estado='R')
+
+    # Búsqueda
     search_query = request.GET.get('buscar', '')
     if search_query:
         tickets = tickets.filter(
@@ -269,11 +397,15 @@ def inicio(request):
             Q(titulo__icontains=search_query) |
             Q(descripcion__icontains=search_query)
         )
-    
+
     return render(request, 'inicio.html', {
         'tickets': tickets,
         'user_profile': user_profile
     })
+
+
+
+
 
 def crear_equipo(request):
      # Verifica si el usuario tiene un perfil y está autenticado
@@ -301,11 +433,11 @@ def todo(request):
     user_profile = UserProfile.objects.get(user=request.user)
     
     if user_profile.rol.nombre == 'Cliente':
-        tickets = Ticket.objects.filter(usuario=user_profile, estado='R')
+        tickets = Ticket.objects.filter(usuario=user_profile, estado='P')
     elif user_profile.rol.nombre == 'Técnico':
-        tickets = Ticket.objects.filter(encargado=user_profile, estado='R')
+        tickets = Ticket.objects.filter(encargado=user_profile, estado='P')
     else:
-        tickets = Ticket.objects.filter(estado='R')
+        tickets = Ticket.objects.filter(estado='P')
     
     # Si hay un término de búsqueda, filtra los tickets
     if search_query:

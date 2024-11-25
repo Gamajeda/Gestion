@@ -1,5 +1,5 @@
 from django import forms
-from .models import Ticket, Categoria, UserProfile, Rol, Equipo, ProblemaFrecuente
+from .models import Ticket, Categoria, UserProfile, Rol, Equipo, ProblemaFrecuente, Calificacion
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
@@ -9,7 +9,18 @@ from django.contrib.auth.forms import UserCreationForm
 class ProblemaFrecuenteForm(forms.ModelForm):
     class Meta:
         model = ProblemaFrecuente
-        fields = ['titulo','problema', 'solucion']
+        fields = ['titulo', 'descripcion', 'solucion']
+        widgets = {
+            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
+            'solucion': forms.Textarea(attrs={'class': 'form-control'})
+        }
+
+class CalificacionForm(forms.Form):
+    calificacion = forms.ChoiceField(
+        choices=[(str(i), f'{i} estrellas') for i in range(1, 6)],
+        widget=forms.RadioSelect
+    )
 
 User=get_user_model()
 

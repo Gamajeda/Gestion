@@ -1,28 +1,52 @@
 {% extends "base.html" %}
-{% block titulo %}login{% endblock %}
+{% block titulo %}Crear Categoría{% endblock %}
 {% block contenido %}
-    <div class="contenedor-principal" id="contenedor-principal"> 
-        <!-- Contenedor principal con los tickets -->
-        <main class="main-principal" id="main-principal">
-            <br>
-
-            <!-- Encabezado del formulario con el título y la información del usuario -->
-            <header id="header" class="header">
-                <h1>Crear categoria</h1>
-                <br>
-                <div class="informacion-usuario">
-                    <span>Usuario: <strong>{{ user.username }}</strong></span>
-                </div>
-            </header>
-            <br><br>
-
-            <!-- Formulario para la creación de tickets, que se envía al servidor mediante POST -->
-            <form method="POST">
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Crear Categoría</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="informacion-usuario mb-3">
+                <span>Usuario: <strong>{{ user.username }}</strong></span>
+            </div>
+            <form method="POST" class="needs-validation" novalidate>
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit">Guardar Categoría</button>
+                <div class="mb-3">
+                    {{ form.as_p }}
+                </div>
+                <div class="d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary btn-sm">Guardar Categoría</button>
+                </div>
             </form>
-            
-        </main>
+        </div>
     </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        margin-top: 20px;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+
+    form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+        font-size: 1em; /* Ajusta el tamaño del texto del botón */
+    }
+</style>
 {% endblock %}

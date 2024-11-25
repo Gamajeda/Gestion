@@ -9,55 +9,71 @@
         </div>
         <div class="card-body">
             <h5 class="card-title">Descripción</h5>
-            <p class="card-text">{{ problema.problema }}</p>
+            <p class="card-text">{{ problema.descripcion }}</p>
             <h5 class="card-title">Solución</h5>
             <p class="card-text">{{ problema.solucion }}</p>
-            <a href="{% url 'preguntas' %}" class="btn btn-secondary">Volver</a>
-            {% if user_profile.rol.nombre == 'Administrador' %}
-                <a href="{% url 'editar_problema' problema.id %}" class="btn btn-primary">Editar</a>
-                <form action="{% url 'eliminar_problema' problema.id %}" method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-danger">Eliminar</button>
-                </form>
+            <h5 class="card-title">Calificación Promedio</h5>
+            <p class="card-text">
+                <div class="star-rating">
+                    {% for i in "12345" %}
+                        <span class="star {% if i <= problema.promedio_calificacion|stringformat:"i" %}filled{% endif %}">&#9733;</span>
+                    {% endfor %}
+                </div>
+            </p>
+            
+            {% if user.is_authenticated and user_profile.rol.nombre != 'Administrador' %}
+                {% if not calificacion_usuario %}
+                    <h5 class="card-title">Calificar este Problema</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="star-rating">
+                            {% for i in "12345" %}
+                                <input type="radio" id="star{{ i }}" name="calificacion" value="{{ i }}">
+                                <label for="star{{ i }}" title="{{ i }} estrellas">&#9733;</label>
+                            {% endfor %}
+                        </div>
+                        <button type="submit" class="btn btn-primary mt-2">Enviar Calificación</button>
+                    </form>
+                    
+                {% endif %}
             {% endif %}
         </div>
-    </div>
-
-    <!-- Sección de calificación -->
-    <div class="mt-4">
-        <h5>¿Te sirvió esta solución?</h5>
-        <form method="post" action="{% url 'detalle_problema' problema.id %}">
-            {% csrf_token %}
-            <div class="star-rating">
-                {% for i in "54321" %}
-                    <input type="radio" id="star{{ i }}" name="calificacion" value="{{ i }}" {% if problema.calificacion == i|stringformat:"i" %}checked{% endif %}>
-                    <label for="star{{ i }}" title="{{ i }} estrellas">&#9733;</label>
-                {% endfor %}
-            </div>
-            <button type="submit" class="btn btn-primary mt-2">Guardar Calificación</button>
-        </form>
     </div>
 </div>
 
 <style>
     .star-rating {
-        direction: rtl;
         display: inline-block;
-        font-size: 2em;
+        font-size: 1.5em;
+        color: #f8f417;
+    }
+    .star-rating .star {
+        cursor: default;
+    }
+    .star-rating .star.filled {
+        color: #f5b301;
     }
     .star-rating input[type="radio"] {
         display: none;
     }
     .star-rating label {
-        color: #ddd;
+        color: #ddad0e;
         cursor: pointer;
+        font-size: 2em;
     }
+    /* Cambia el color de las estrellas seleccionadas y anteriores */
     .star-rating input[type="radio"]:checked ~ label {
-        color: #f5b301;
+        color: #cef00d;
     }
+    .star-rating input[type="radio"]:checked + label,
+    .star-rating input[type="radio"]:checked + label ~ label {
+        color: #f7cc58;
+    }
+    /* Cuando se pasa el ratón, cambia las estrellas anteriores también */
     .star-rating label:hover,
     .star-rating label:hover ~ label {
-        color: #f5b301;
+        color: #dda200;
     }
 </style>
+
 {% endblock %}

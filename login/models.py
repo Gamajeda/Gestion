@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 
 # Define el modelo de usuario
@@ -8,14 +9,20 @@ from django.contrib.auth import get_user_model
 
 class ProblemaFrecuente(models.Model):
     titulo = models.CharField(max_length=255)
-    problema = models.TextField()
+    descripcion = models.TextField()
     solucion = models.TextField()
-    calificacion = models.IntegerField(default=0)
+    promedio_calificacion = models.FloatField(default=0.0)  # Campo para almacenar el promedio de calificaciones
 
     def __str__(self):
         return self.titulo
 
+class Calificacion(models.Model):
+    problema = models.ForeignKey(ProblemaFrecuente, on_delete=models.CASCADE, related_name='calificaciones')
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    calificacion = models.IntegerField()
 
+    def __str__(self):
+        return f"{self.usuario.username} - {self.problema.titulo} - {self.calificacion}"
 
 User = get_user_model()
 
@@ -95,7 +102,13 @@ class Ticket(models.Model):
     usuario = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='tickets_usuario')
     encargado = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='tickets_encargado', null=True, blank=True)
     comentarios = models.TextField(blank=True, null=True)
-    calificacion = models.IntegerField(null=True, blank=True)  # Nuevo campo de calificación
+    calificacion = models.IntegerField(null=True, blank=True)  # Permite valores nulos
+
+    def get_prioridad_display(self):
+        return dict(self.PRIORIDAD_CHOICES).get(self.prioridad, 'Desconocida')
+
+    def get_estado_display(self):
+        return dict(self.ESTADO_CHOICES).get(self.estado, 'Desconocido')
 
     def __str__(self):
-        return self.titulo
+        return f"{self.titulo} - {self.id_ticket}"

@@ -1,11 +1,47 @@
 {% extends "base.html" %}
-{% block titulo %}Agregar pregunta{% endblock %}
+{% block titulo %}Agregar Pregunta{% endblock %}
 {% block contenido %}
-<h1>Agregar Problema Frecuente</h1>
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Agregar Problema Frecuente</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form method="POST" class="needs-validation" novalidate>
+                {% csrf_token %}
+                <div class="mb-3">
+                    {{ form.as_p }}
+                </div>
+                <button type="submit" class="btn btn-primary btn-sm w-100">Agregar Problema</button>
+            </form>
+        </div>
+    </div>
+</div>
 
-<form method="POST">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Agregar Problema</button>
-</form>
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        margin-top: 20px;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+
+    form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    button {
+        font-size: 1em; /* Ajusta el tamaño del texto del botón */
+    }
+</style>
 {% endblock %}

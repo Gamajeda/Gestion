@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% block titulo %}Detalle{% endblock %}
+{% block contenido %}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Gráfico de Tickets</h2>
+    <form method="get" id="usuarioForm" class="mb-4">
+        <div class="input-group">
+            <label class="input-group-text" for="usuario">Seleccionar Usuario:</label>
+            <select name="usuario" id="usuario" class="form-select" onchange="document.getElementById('usuarioForm').submit();">
+                {% for usuario in usuarios %}
+                    <option value="{{ usuario.id }}" {% if usuario == selected_usuario %}selected{% endif %}>{{ usuario.user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+    </form>
+    <div class="d-flex justify-content-center mb-4">
+        <button id="btnCreados" class="btn btn-outline-secondary me-2">Tickets Creados</button>
+        <button id="btnResueltos" class="btn btn-outline-secondary me-2">Tickets Resueltos</button>
+        <button id="btnPendientes" class="btn btn-outline-secondary">Tickets Pendientes</button>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <canvas id="myChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var chartData = {
+        labels: {{ labels|safe }},
+        datasets: [
+            {
+                label: 'Tickets creados',
+                data: {{ data_creados|safe }},
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }
+        ]
+    };
+
+    var chart = new Chart(ctx, {
+        type: 'bar',
+        data: chartData
+    });
+
+    document.getElementById('btnCreados').addEventListener('click', function() {
+        chart.data.datasets[0].label = 'Tickets creados';
+        chart.data.datasets[0].data = {{ data_creados|safe }};
+        chart.update();
+    });
+
+    document.getElementById('btnResueltos').addEventListener('click', function() {
+        chart.data.datasets[0].label = 'Tickets resueltos';
+        chart.data.datasets[0].data = {{ data_resueltos|safe }};
+        chart.update();
+    });
+
+    document.getElementById('btnPendientes').addEventListener('click', function() {
+        chart.data.datasets[0].label = 'Tickets pendientes';
+        chart.data.datasets[0].data = {{ data_pendientes|safe }};
+        chart.update();
+    });
+</script>
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        margin-top: 20px;
+    }
+
+    h2 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .btn {
+        font-size: 1em;
+        margin-right: 10px; /* Añade un margen derecho para separar los botones */
+    }
+
+    .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .btn-outline-secondary:hover {
+        color: #fff;
+        background-color: #6c757d;
+        border-color: #6c757d;
+    }
+
+    .input-group-text {
+        background-color: #6c757d;
+        color: #fff;
+        border: none;
+    }
+
+    .form-select {
+        border: 1px solid #6c757d;
+        border-radius: 0.25rem;
+    }
+
+    .form-select:focus {
+        border-color: #6c757d;
+        box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.25);
+    }
+
+    .form-select option {
+        background-color: #fff;
+        color: #343a40;
+    }
+
+    .form-select option:hover {
+        background-color: #6c757d;
+        color: #fff;
+    }
+</style>
+{% endblock %}
