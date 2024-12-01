@@ -1,10 +1,27 @@
 from django import forms
-from .models import Ticket, Categoria, UserProfile, Rol, Equipo, ProblemaFrecuente, Calificacion
+from .models import Ticket, Categoria, UserProfile, Rol, Equipo, ProblemaFrecuente, Calificacionproblema, Calificaciontrabajo
+from datetime import datetime
+from django.utils import timezone
+from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import UserCreationForm
 
 # Formulario para crear una categoría
+
+class EmailChangeForm(forms.Form):
+    email = forms.EmailField(label='Correo electrónico', required=True, widget=forms.EmailInput(attrs={'class': 'form-control'}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super(EmailChangeForm, self).__init__(*args, **kwargs)
+    
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email == self.user.email:
+            raise forms.ValidationError('El correo electrónico no puede ser el mismo que el actual.')
+        return email
 
 class ProblemaFrecuenteForm(forms.ModelForm):
     class Meta:
@@ -16,11 +33,17 @@ class ProblemaFrecuenteForm(forms.ModelForm):
             'solucion': forms.Textarea(attrs={'class': 'form-control'})
         }
 
-class CalificacionForm(forms.Form):
+class CalificacionForm(forms.ModelForm):
     calificacion = forms.ChoiceField(
         choices=[(str(i), f'{i} estrellas') for i in range(1, 6)],
         widget=forms.RadioSelect
     )
+    
+
+    class Meta:
+        model = Calificacionproblema
+        fields = ['calificacion']  # Solo el campo 'calificacion' será usado en el formulario
+
 
 User=get_user_model()
 
@@ -45,7 +68,7 @@ class CategoriaForm(forms.ModelForm):
 class TicketForm(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = ['titulo', 'descripcion', 'estado', 'prioridad', 'categoria', 'equipo', 'usuario', 'encargado']
+        fields = ['titulo', 'descripcion', 'estado', 'prioridad', 'categoria', 'equipo', 'usuario', 'encargado','archivo']
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
@@ -54,7 +77,8 @@ class TicketForm(forms.ModelForm):
             'categoria': forms.Select(attrs={'class': 'form-control'}),
             'equipo': forms.Select(attrs={'class': 'form-control'}),
             'usuario': forms.Select(attrs={'class': 'form-control'}),
-            'encargado': forms.Select(attrs={'class': 'form-control'})
+            'encargado': forms.Select(attrs={'class': 'form-control'}),
+            'archivo': forms.FileInput(attrs={'class': 'form-control'})
         }
 
     def __init__(self, *args, **kwargs):
@@ -86,7 +110,7 @@ class TicketForm(forms.ModelForm):
 class TicketFormEdit(forms.ModelForm):
     class Meta:
         model = Ticket
-        fields = ['titulo', 'descripcion', 'prioridad', 'categoria', 'fecha_resolucion', 'estado', 'encargado', 'comentarios']  # Agrega 'encargado'
+        fields = ['titulo', 'descripcion', 'prioridad', 'categoria', 'fecha_resolucion', 'estado', 'encargado', 'comentarios']
         labels = {
             'titulo': 'Título',
             'descripcion': 'Descripción',
@@ -94,33 +118,55 @@ class TicketFormEdit(forms.ModelForm):
             'categoria': 'Categoría',
             'fecha_resolucion': 'Fecha de Resolución',
             'estado': 'Estado',
-            'encargado': 'Encargado',  # Agrega una etiqueta para el nuevo campo
-            'comentarios': 'Comentarios'  # Agrega una etiqueta para el nuevo campo
+            'encargado': 'Encargado',
+            'comentarios': 'Comentarios',
         }
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control'}),
             'prioridad': forms.Select(attrs={'class': 'form-control'}),
-            'fecha_resolucion': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'fecha_resolucion': forms.DateTimeInput(attrs={'type': 'datetime-local', 'class': 'form-control'}),
             'estado': forms.Select(attrs={'class': 'form-control'}),
-            'encargado': forms.Select(attrs={'class': 'form-control'}),  # Agrega el widget para 'encargado'
-            'comentarios': forms.Textarea(attrs={'class': 'form-control'}),  # Agrega el widget para 'comentarios'
+            'encargado': forms.Select(attrs={'class': 'form-control'}),
+            'comentarios': forms.Textarea(attrs={'class': 'form-control'}),
         }
 
     def __init__(self, *args, **kwargs):
         super(TicketFormEdit, self).__init__(*args, **kwargs)
-        self.fields['encargado'].queryset = UserProfile.objects.filter(rol__nombre='Técnico')  # Filtra solo técnicos
+
+        # Deshabilitar la fecha de resolución si ya ha sido asignada
+        if self.instance.fecha_resolucion:
+            self.fields['fecha_resolucion'].disabled = True  # Deshabilitar campo
+
+        # Filtrar encargados para que solo aparezcan técnicos
+        self.fields['encargado'].queryset = UserProfile.objects.filter(rol__nombre='Técnico')
 # Formulario para registrar un usuario
+
+    
+    def clean_fecha_resolucion(self):
+        fecha_resolucion = self.cleaned_data.get('fecha_resolucion')
+        if not fecha_resolucion and self.instance.pk:
+            # Si no se proporciona una nueva fecha de resolución, mantener la existente
+            return self.instance.fecha_resolucion
+        if fecha_resolucion:
+            # Asegúrate de que la fecha sea un objeto datetime aware
+            if timezone.is_naive(fecha_resolucion):
+                fecha_resolucion = timezone.make_aware(fecha_resolucion)
+            
+            if fecha_resolucion < timezone.now():
+                raise forms.ValidationError("La fecha de resolución no puede ser anterior a la fecha y hora actuales.")
+        return fecha_resolucion
+
+    
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
     first_name = forms.CharField(max_length=30, required=True)
     last_name = forms.CharField(max_length=30, required=True)
-    rol = forms.ModelChoiceField(queryset=Rol.objects.all(), required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2', 'rol']
+        fields = ['username', 'email', 'first_name', 'last_name', 'password1', 'password2']
         labels = {
             'username': 'Nombre de usuario',
             'email': 'Correo electrónico',
@@ -128,7 +174,6 @@ class CustomUserCreationForm(UserCreationForm):
             'last_name': 'Apellidos',
             'password1': 'Contraseña',
             'password2': 'Confirmar contraseña',
-            'rol': 'Rol'
         }
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control'}),
@@ -137,7 +182,6 @@ class CustomUserCreationForm(UserCreationForm):
             'last_name': forms.TextInput(attrs={'class': 'form-control'}),
             'password1': forms.PasswordInput(attrs={'class': 'form-control'}),
             'password2': forms.PasswordInput(attrs={'class': 'form-control'}),
-            'rol': forms.Select(attrs={'class': 'form-control'}),
         }
 
     def save(self, commit=True):
@@ -148,10 +192,8 @@ class CustomUserCreationForm(UserCreationForm):
         user.set_password(self.cleaned_data['password1'])
         if commit:
             user.save()
-            UserProfile.objects.create(user=user, rol=self.cleaned_data['rol'], 
-                                       nombre=user.first_name, 
-                                       apellidos=user.last_name)  # Crear perfil de usuario
         return user
+
 
 
 

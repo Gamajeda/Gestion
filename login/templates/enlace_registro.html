@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block titulo %}Enlace de Registro{% endblock %}
+{% block contenido %}
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Enlace de Registro Generado</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="alert alert-success" role="alert">
+                <p>El enlace de registro ha sido generado exitosamente. Puedes copiar el enlace y enviarlo al usuario.</p>
+                <p><strong>Enlace de Registro:</strong> <a href="{{ enlace_registro }}">{{ enlace_registro }}</a></p>
+            </div>
+            <a href="{% url 'inicio' %}" class="btn btn-primary w-100">Volver al Inicio</a>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        margin-top: 20px;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+
+    .alert {
+        font-size: 1.2em;
+    }
+
+    .btn {
+        font-size: 1.2em;
+    }
+</style>
+{% endblock %}

@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block titulo %}Detalle del Problema{% endblock %}
 {% block contenido %}
-<div class="container mt-4">
-    <h1 class="mb-4">Detalle del Problema</h1>
-    <div class="card">
-        <div class="card-header">
-            <h2>{{ problema.titulo }}</h2>
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">{{ problema.titulo }}</h1>
+    <div class="card mb-4">
+        <div class="card-header bg-dark text-white">
+            Información del Problema
         </div>
         <div class="card-body">
             <h5 class="card-title">Descripción</h5>
@@ -22,58 +22,79 @@
             </p>
             
             {% if user.is_authenticated and user_profile.rol.nombre != 'Administrador' %}
-                {% if not calificacion_usuario %}
+                {% if calificado %}
+                    <h5 class="card-title">Tu Calificación</h5>
+                    <p class="card-text">
+                        <div class="star-rating">
+                            {% for i in "12345" %}
+                                <span class="star {% if i <= calificacion|stringformat:"i" %}filled{% endif %}">&#9733;</span>
+                            {% endfor %}
+                        </div>
+                    </p>
+                {% else %}
                     <h5 class="card-title">Calificar este Problema</h5>
                     <form method="post">
                         {% csrf_token %}
-                        <div class="star-rating">
-                            {% for i in "12345" %}
-                                <input type="radio" id="star{{ i }}" name="calificacion" value="{{ i }}">
-                                <label for="star{{ i }}" title="{{ i }} estrellas">&#9733;</label>
-                            {% endfor %}
-                        </div>
+                        {{ form.as_p }}
                         <button type="submit" class="btn btn-primary mt-2">Enviar Calificación</button>
                     </form>
-                    
                 {% endif %}
+            {% endif %}
+            
+            {% if user.is_authenticated and user_profile.rol.nombre == 'Administrador' %}
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'editar_problema' problema.id %}" class="btn btn-primary">Editar</a>
+                    <form method="post" action="{% url 'eliminar_problema' problema.id %}" style="display:inline;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </div>
             {% endif %}
         </div>
     </div>
 </div>
 
 <style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        margin-top: 20px;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .btn {
+        font-size: 1em;
+    }
+
     .star-rating {
         display: inline-block;
         font-size: 1.5em;
-        color: #f8f417;
+        color: #eee56c;
     }
+
     .star-rating .star {
-        cursor: default;
-    }
-    .star-rating .star.filled {
-        color: #f5b301;
-    }
-    .star-rating input[type="radio"] {
-        display: none;
-    }
-    .star-rating label {
-        color: #ddad0e;
         cursor: pointer;
-        font-size: 2em;
     }
-    /* Cambia el color de las estrellas seleccionadas y anteriores */
-    .star-rating input[type="radio"]:checked ~ label {
-        color: #cef00d;
-    }
-    .star-rating input[type="radio"]:checked + label,
-    .star-rating input[type="radio"]:checked + label ~ label {
-        color: #f7cc58;
-    }
-    /* Cuando se pasa el ratón, cambia las estrellas anteriores también */
-    .star-rating label:hover,
-    .star-rating label:hover ~ label {
-        color: #dda200;
+
+    .star-rating .star.filled {
+        color: #cf9500;
     }
 </style>
-
 {% endblock %}

@@ -1,39 +1,55 @@
 {% extends "base.html" %}
-{% block titulo %}login{% endblock %}
+{% block titulo %}Crear Ticket{% endblock %}
 {% block contenido %}
-    <div class="contenedor-principal" id="contenedor-principal"> 
-        <!-- Contenedor principal con los tickets -->
-        <main class="main-principal" id="main-principal">
-            <br>
-
-            <!-- Encabezado del formulario con el título y la información del usuario -->
-            <header id="header" class="header">
-                <h1>Crear ticket</h1>
-                <br>
-                <div class="informacion-usuario">
-                    <span>Usuario: <strong>{{ user.username }}</strong></span>
-                </div>
-            </header>
-            <br><br>
-
-            <!-- Formulario para la creación de tickets, que se envía al servidor mediante POST -->
-            <form method="post">
-                {% csrf_token %}
-                {{ form.as_p }}  <!-- Renderiza los campos del formulario -->
-                {% if messages %}
-                <div>
+<div class="container mt-5">
+    <h1 class="mb-4 text-center">Crear Ticket</h1>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            {% if messages %}
+                <div id="messages">
                     {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }}">
+                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
                             {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     {% endfor %}
                 </div>
-                {% endif %}
-            
-                <button type="submit">Crear Ticket</button>
+            {% endif %}
+            <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary w-100">Crear Ticket</button>
             </form>
-            
-            
-        </main>
+        </div>
     </div>
+</div>
+
+<style>
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f4f9;
+        margin: 0;
+        padding: 0;
+    }
+
+    .container {
+        margin-top: 20px;
+    }
+
+    h1 {
+        font-size: 2em;
+        margin-bottom: 20px;
+    }
+
+    form {
+        background-color: #fff;
+        padding: 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn {
+        font-size: 1.2em;
+    }
+</style>
 {% endblock %}

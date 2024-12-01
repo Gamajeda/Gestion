@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block titulo %}Mi Aplicación{% endblock %}</title>
+  <title>{% block titulo %}ResQare{% endblock %}</title>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="stylesheet" href="{% static 'css/styles.css' %}">
   {% block head %}{% endblock %}
@@ -12,7 +12,7 @@
 <body>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">Mi Aplicación</a>
+      <a class="navbar-brand" href="#">ResQare</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -38,25 +38,32 @@
               <li class="nav-item">
                 <a class="nav-link active" href="{% url 'preguntas' %}" aria-current="page">Preguntas</a>
               </li>
-              {% if user_profile.rol_id == 3 %}
+              {% if user_profile.rol_id == 1 %}
                 <li class="nav-item">
                   <a class="nav-link" href="{% url 'graficas' %}">Gráficas</a>
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" href="{% url 'crear_equipo' %}">Equipo</a>
-                </li>
-                <li class="nav-item">
-                  <a class="nav-link" href="{% url 'register' %}">Registro</a>
-                </li>
+                  <a class="nav-link" href="{% url 'listar_equipos' %}">Ver Equipos</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Generar Enlace de Registro
+                </a>
+                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <a class="dropdown-item" href="{% url 'generar_enlace_registro' 'Administrador' %}">Administrador</a>
+                    <a class="dropdown-item" href="{% url 'generar_enlace_registro' 'Cliente' %}">Cliente</a>
+                    <a class="dropdown-item" href="{% url 'generar_enlace_registro' 'Técnico' %}">Técnico</a>
+                </div>
+            </li>
               {% endif %}
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">LogOut</a>
+                <a class="nav-link" href="{% url 'logout' %}">Cerrar Sesion</a>
               </li>
           {% endif %}
           
           {% if not user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}">LogIn</a>
+              <a class="nav-link" href="{% url 'login' %}">Iniciar Sesion</a>
             </li>
           {% endif %}
         </ul>

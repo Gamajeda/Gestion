@@ -1,24 +1,15 @@
 {% extends "base.html" %}
-{% block titulo %}Registrar Equipo{% endblock %}
+{% block titulo %}Eliminar Equipo{% endblock %}
 {% block contenido %}
 <div class="container mt-5">
-    <h1 class="mb-4 text-center">Registrar Equipo</h1>
+    <h1 class="mb-4 text-center">Eliminar Equipo</h1>
     <div class="row justify-content-center">
         <div class="col-md-8">
-            {% if messages %}
-                <div id="messages">
-                    {% for message in messages %}
-                        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    {% endfor %}
-                </div>
-            {% endif %}
+            <p>¿Estás seguro de que deseas eliminar el equipo <strong>{{ equipo.nombre }}</strong>?</p>
             <form method="POST" class="needs-validation" novalidate>
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary w-100">Registrar</button>
+                <button type="submit" class="btn btn-danger">Eliminar</button>
+                <a href="{% url 'listar_equipos' %}" class="btn btn-secondary">Cancelar</a>
             </form>
         </div>
     </div>

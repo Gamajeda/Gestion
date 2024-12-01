@@ -29,6 +29,13 @@
                 <button type="submit" class="btn btn-primary mt-2">Actualizar Perfil</button>
             </form>
             <hr>
+            <h3>Cambiar Email</h3>
+            <form method="post">
+                {% csrf_token %}
+                {{ email_form.as_p }}
+                <button type="submit" class="btn btn-primary mt-2">Actualizar Email</button>
+            </form>
+            <hr>
             <!-- Formulario para cambiar la contraseña -->
             <h3>Cambiar Contraseña</h3>
             <form method="post">

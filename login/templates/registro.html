@@ -1,8 +1,8 @@
 {% extends "base.html" %}
-{% block titulo %}Registrar Equipo{% endblock %}
+{% block titulo %}Registro{% endblock %}
 {% block contenido %}
 <div class="container mt-5">
-    <h1 class="mb-4 text-center">Registrar Equipo</h1>
+    <h1 class="mb-4 text-center">Registro</h1>
     <div class="row justify-content-center">
         <div class="col-md-8">
             {% if messages %}
@@ -17,8 +17,9 @@
             {% endif %}
             <form method="POST" class="needs-validation" novalidate>
                 {% csrf_token %}
-                {{ form.as_p }}
-                <button type="submit" class="btn btn-primary w-100">Registrar</button>
+    {{ form.as_p }}
+    <p><strong>Rol asignado:</strong> {{ rol.nombre }}</p>
+                <button type="submit" class="btn btn-primary w-100">Registrarse</button>
             </form>
         </div>
     </div>

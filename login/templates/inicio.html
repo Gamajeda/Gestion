@@ -8,7 +8,7 @@
         <h1 class="mb-0">Historial de Tickets</h1>
     </div>
     <div class="contenedor-buscar mb-4">
-        <form method="get" action="{% url 'inicio' %}">
+        <form method="get" action="{% url 'all' %}">
             <div class="input-group">
                 <input type="text" name="buscar" placeholder="Buscar ticket..." class="form-control">
                 <button type="submit" class="btn btn-secondary">Buscar</button>
@@ -31,6 +31,18 @@
             <a class="nav-link text-decoration-none text-dark" href="{% url 'todo' %}">Tickets en Progreso</a>
         </li>
     </ul>
+    {% if tickets_proximos_a_vencer %}
+            <div class="alert alert-warning">
+                <h4>Tickets próximos a vencer:</h4>
+                <ul>
+                    {% for ticket in tickets_proximos_a_vencer %}
+                        <li>
+                            <strong>{{ ticket.titulo }}</strong> - Vencimiento: {{ ticket.fecha_resolucion }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
     <div class="table-responsive">
         <table class="table table-striped table-hover">
             <thead class="thead-dark">
@@ -38,7 +50,7 @@
                     <th>Encargado</th>
                     <th>ID Ticket</th>
                     <th>Problema</th>
-                    <th>Descripción</th>
+                    <th>Prioridad</th>
                     <th>Estado</th>
                     <th>Fecha de Creación</th>
                     <th>Fecha de Solución</th>
@@ -47,13 +59,21 @@
             <tbody>
                 {% for ticket in tickets %}
                     <tr>
-                        <td>{{ ticket.encargado }}</td>
+                        {% if ticket.encargado %}
+                            <td>{{ ticket.encargado }}</td>
+                        {% else %}
+                            <td>No asignado</td>
+                        {% endif %}
                         <td>{{ ticket.id_ticket }}</td>
                         <td><a class="text-decoration-none text-dark" href="{% url 'ticket_detail' ticket.id_ticket %}">{{ ticket.titulo }}</a></td>
-                        <td>{{ ticket.descripcion }}</td>
+                        <td>{{ ticket.prioridad }}</td>
                         <td>{{ ticket.get_estado_display }}</td>
                         <td>{{ ticket.fecha_creacion }}</td>
-                        <td>{{ ticket.fecha_resolucion }}</td>
+                        {% if ticket.fecha_resolucion %}
+                            <td>{{ ticket.fecha_resolucion }}</td>
+                        {% else %}
+                            <td>Sin fecha</td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </tbody>

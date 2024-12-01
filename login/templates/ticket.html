@@ -25,7 +25,11 @@
                         </div>
                         <div class="col-md-6">
                             <h5 class="card-title">Fecha de Solución</h5>
+                            {% if ticket.fecha_resolucion %}
                             <p class="card-text">{{ ticket.fecha_resolucion }}</p>
+                        {% else %}
+                            <p class="card-text">No hay fecha</p>
+                        {% endif %}
                         </div>
                     </div>
                     <h5 class="card-title">Equipo</h5>
@@ -33,11 +37,27 @@
                     <h5 class="card-title">Usuario</h5>
                     <p class="card-text">{{ ticket.usuario }}</p>
                     <h5 class="card-title">Encargado</h5>
-                    <p class="card-text">{{ ticket.encargado }}</p>
+                    {% if ticket.encargado %}
+                            <p class="card-text">{{ ticket.encargado }}</p>
+                        {% else %}
+                            <p class="card-text">No hay encargado</p>
+                        {% endif %}
                     <h5 class="card-title">Categoría</h5>
                     <p class="card-text">{{ ticket.categoria }}</p>
                     <h5 class="card-title">Comentarios</h5>
-                    <p class="card-text">{{ ticket.comentarios }}</p>
+                    {% if ticket.comentario %}
+                            <p class="card-text">{{ ticket.comentario }}</p>
+                        {% else %}
+                            <p class="card-text">No hay comentarios</p>
+                        {% endif %}
+                    <h5 class="card-title">Archivo Adjunto</h5>
+                    <p class="card-text">
+                        {% if ticket.archivo %}
+                            <a href="{{ ticket.archivo.url }}" class="btn btn-info" download>Descargar Archivo</a>
+                        {% else %}
+                            No hay archivo adjunto
+                        {% endif %}
+                    </p>
                     <h5 class="card-title">Calificación</h5>
                     <p class="card-text">
                         {% if ticket.calificacion %}
@@ -50,19 +70,45 @@
                             No calificado
                         {% endif %}
                     </p>
+                    <h5 class="card-title">Historial de Técnicos</h5>
+                    <ul class="list-group">
+                        {% for historial_item in historial %}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <strong>Técnico:</strong> {{ historial_item.tecnico.user.username }} <br>
+                                        <strong>Fecha de cambio:</strong> {{ historial_item.fecha_cambio|date:"d/m/Y H:i" }} <br>
+                                        {% if historial_item.motivo %}
+                                            <strong>Motivo:</strong> {{ historial_item.motivo }}
+                                        {% else %}
+                                            <strong>Motivo:</strong> Revision
+                                            {% endif %}
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="badge bg-primary">{{ historial_item.tecnico.user.username }}</span>
+                                    </div>
+                                </div>
+                            </li>
+                        {% empty %}
+                            <li class="list-group-item">No hay historial disponible.</li>
+                        {% endfor %}
+                    </ul>
                 </div>
             </div>
-            <div class="d-flex justify-content-between">
+            <div class="d-flex justify-content-between mt-4">
                 <a href="{% url 'inicio' %}" class="btn btn-secondary">Volver</a>
+                
                 {% if user_profile.rol.nombre == 'Administrador' or user_profile.rol.nombre == 'Técnico' %}
                     <a href="{% url 'editar_ticket' ticket.id_ticket %}" class="btn btn-primary">Editar</a>
                 {% endif %}
+                
                 {% if user_profile.rol.nombre == 'Administrador' %}
                     <form method="post" action="{% url 'eliminar_ticket' ticket.id_ticket %}" style="display:inline;">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-danger">Eliminar</button>
                     </form>
                 {% endif %}
+                <a href="{% url 'descargar_ticket' ticket.id_ticket %}" class="btn btn-success">Descargar Ticket</a>
             </div>
         </div>
     </div>
