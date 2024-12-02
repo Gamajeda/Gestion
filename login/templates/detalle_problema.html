@@ -38,17 +38,17 @@
                     <form method="post">
                         {% csrf_token %}
                         {{ form.as_p }}
-                        <button type="submit" class="btn btn-primary mt-2">Enviar Calificación</button>
+                        <button type="submit" class="btn btn-custom-azul mt-2">Enviar Calificación</button>
                     </form>
                 {% endif %}
             {% endif %}
             
             {% if user.is_authenticated and user_profile.rol.nombre == 'Administrador' %}
                 <div class="d-flex justify-content-between mt-4">
-                    <a href="{% url 'editar_problema' problema.id %}" class="btn btn-primary">Editar</a>
+                    <a href="{% url 'editar_problema' problema.id %}" class="btn btn-custom-azul">Editar</a>
                     <form method="post" action="{% url 'eliminar_problema' problema.id %}" style="display:inline;">
                         {% csrf_token %}
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                        <button type="submit" class="btn btn-custom-rojo">Eliminar</button>
                     </form>
                 </div>
             {% endif %}
@@ -83,6 +83,29 @@
 
     .btn {
         font-size: 1em;
+    }
+
+    /* Botones personalizados */
+    .btn-custom-azul {
+        background-color: #1A428A;
+        border-color: #1A428A;
+        color: white;
+    }
+
+    .btn-custom-azul:hover {
+        background-color: #153a6f;
+        border-color: #153a6f;
+    }
+
+    .btn-custom-rojo {
+        background-color: #B12028;
+        border-color: #B12028;
+        color: white;
+    }
+
+    .btn-custom-rojo:hover {
+        background-color: #8f1820;
+        border-color: #8f1820;
     }
 
     .star-rating {
