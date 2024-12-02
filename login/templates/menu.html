@@ -20,6 +20,17 @@
             text-align: center; /* Centra el texto */
         }
 
+        /* Contenedor del cuadro principal */
+        .main-container {
+            background-color: #fff; /* Fondo blanco */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            width: 90%; /* Ancho flexible */
+            max-width: 800px; /* Ancho máximo */
+            margin: 20px auto; /* Centrado */
+        }
+
         header {
             background-color: #1A428A; /* Azul */
             color: #fff;
@@ -28,10 +39,8 @@
             align-items: center;
             justify-content: center; /* Centra los elementos del header */
             border-bottom: 2px solid #495057;
-            width: 30%; /* Ajusta el ancho según sea necesario */
-            max-width: 800px; /* Establece un ancho máximo para la respuesta */
+            width: 100%; /* Ajusta al ancho del contenedor */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin: 0 auto; /* Centra el encabezado horizontalmente */
             border-radius: 10px; /* Redondea las esquinas */
         }
 
@@ -89,21 +98,23 @@
     </style>
 </head>
 <body>
-    <!-- Encabezado con el nombre del usuario y su foto -->
-    <header>
-        <img src="/static/images/default_profile.png" alt="Foto de perfil">
-        <h2>{{ user_profile.user.username }}</h2>
-    </header>
+    <!-- Contenedor principal con el cuadro -->
+    <div class="main-container">
+        <!-- Encabezado con el nombre del usuario y su foto -->
+        <header>
+            <img src="/static/images/default_profile.png" alt="Foto de perfil">
+            <h2>{{ user_profile.user.username }}</h2>
+        </header>
 
-    <!-- Botones de navegación -->
-    <div class="container">
-        <div class="list-group">
-            <a class="list-group-item" href="{% url 'preguntas' %}">Preguntas FAQ</a>
-            <a class="list-group-item" href="{% url 'tikcet' %}">Generar Ticket</a>
-            <a class="list-group-item" href="{% url 'inicio' %}">Historial Ticket</a>
-            
+        <!-- Botones de navegación -->
+        <div class="container">
+            <div class="list-group">
+                <a class="list-group-item" href="{% url 'preguntas' %}">Preguntas FAQ</a>
+                <a class="list-group-item" href="{% url 'tikcet' %}">Generar Ticket</a>
+                <a class="list-group-item" href="{% url 'inicio' %}">Historial Ticket</a>
+            </div>
+            <img src="/static/images/LOGO MINI - SIMA.png" alt="Logo" class="logo-bottom">
         </div>
-        <img src="/static/images/LOGO MINI - SIMA.png" alt="Logo" class="logo-bottom">
     </div>
 </body>
 </html>
