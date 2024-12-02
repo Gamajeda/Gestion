@@ -118,7 +118,7 @@ def graficas(request):
         'data_pendientes': data_pendientes,
     }
 
-    return render(request, 'graficas.html', context)
+    return render(request, 'graficas.html', context, {'user_profile': user_profile})
 
 @login_required
 @login_required
