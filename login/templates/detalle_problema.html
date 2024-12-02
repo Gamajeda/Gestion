@@ -2,12 +2,12 @@
 {% block titulo %}Detalle del Problema{% endblock %}
 {% block contenido %}
 <div class="container mt-5">
-    <h1 class="mb-4 text-center">{{ problema.titulo }}</h1>
     <div class="card mb-4">
         <div class="card-header bg-dark text-white">
-            Información del Problema
+            {{ problema.titulo }}
         </div>
         <div class="card-body">
+            <h5 class="card-title">Información del Problema</h5>
             <h5 class="card-title">Descripción</h5>
             <p class="card-text">{{ problema.descripcion }}</p>
             <h5 class="card-title">Solución</h5>
