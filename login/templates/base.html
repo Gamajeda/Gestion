@@ -60,7 +60,8 @@
           {% endif %}
           {% if not user.is_authenticated %}
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'login' %}">Iniciar Sesión</a>
+              <a class="nav-link" href="{% url 'login' %}">
+                <img src="{% static 'images/login-icon.png' %}" alt="Iniciar sesión"> Iniciar Sesión</a>
             </li>
           {% endif %}
         </ul>
