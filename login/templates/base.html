@@ -20,11 +20,7 @@
           {% if user.is_authenticated %}
             <li class="nav-item">
               <a class="nav-link" href="{% url 'perfil' %}">
-                {% if user_profile.foto %}
-                  <img src="{{ user_profile.foto.url }}" alt="Foto de perfil" class="rounded-circle" width="30" height="30">
-                {% else %}
-                  <img src="{% static 'media/images/default_profile.png' %}" alt="Foto de perfil" class="rounded-circle" width="30" height="30">
-                {% endif %}
+                
                 {{ user.username }}
               </a>
             </li>
