@@ -82,7 +82,6 @@ def descargar_ticket(request, id):
 @admin_required
 def graficas(request):
     # Obtener todos los perfiles de usuario
-    user_admin = UserProfile.objects.get(user=request.user)
     usuarios = UserProfile.objects.all()
 
     # Obtener el id del usuario seleccionado desde el GET request
@@ -118,8 +117,7 @@ def graficas(request):
         'data_pendientes': data_pendientes,
     }
 
-    return render(request, 'graficas.html', {'user_admin': user_admin, **context})
-
+    return render(request, 'graficas.html', context)
 
 @login_required
 @login_required
