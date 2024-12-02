@@ -14,10 +14,11 @@ import os  # Asegúrate de importar el módulo os
 from pathlib import Path
 import django_heroku
 import dj_database_url
-
+from dotenv import load_dotenv
+load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+print(os.getenv('DATABASE_URL'))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -83,6 +84,7 @@ WSGI_APPLICATION = 'tikcet.wsgi.application'
 DATABASES = {
     'default': dj_database_url.parse(os.getenv('DATABASE_URL'))
 }
+
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
