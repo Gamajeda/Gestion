@@ -25,7 +25,7 @@ BASE_DIR =  os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'django-insecure-h15l8dkv6d69f8$9)i_!f96jgl1bj^-wqcykp&$y=4a)44t)uz'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -59,7 +59,7 @@ ROOT_URLCONF = 'tikcet.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],  # Aquí se define la carpeta donde se encuentran los templates
+        'DIRS': [os.path.join(BASE_DIR, 'templates')], # Aquí se define la carpeta donde se encuentran los templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
