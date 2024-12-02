@@ -1,1 +1,1 @@
-web: gunicorn ticket.wsgi:application --log-file -
+web: gunicorn tikcet.wsgi:application --log-file -
