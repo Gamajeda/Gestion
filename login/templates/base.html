@@ -13,6 +13,16 @@
       max-width: 50px;  /* Limita el ancho máximo de la imagen */
       height: auto;     /* Mantiene la proporción de la imagen */
     }
+    .center-image {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;  /* Ocupa toda la altura de la ventana */
+    }
+    .center-image img {
+      max-width: 100%;  /* Asegura que la imagen no se estire */
+      height: auto;     /* Mantiene la proporción de la imagen */
+    }
   </style>
   {% block head %}{% endblock %}
 </head>
