@@ -11,11 +11,9 @@
         <div class="card-body">
             <div class="row mb-3">
                 <div class="col-md-4">
-                    {% if user_profile.foto %}
-                        <img src="{{ user_profile.foto.url }}" alt="Foto de perfil" class="img-fluid rounded-circle">
-                    {% else %}
-                        <img src="{% static 'images/default_profile.png' %}" alt="Foto de perfil" class="img-fluid rounded-circle">
-                    {% endif %}
+                    
+                        <img src="/static/images/default_profile.png" alt="Foto de perfil" class="img-fluid rounded-circle">
+                    
                 </div>
                 <div class="col-md-8">
                     <p><strong>Nombre de Usuario:</strong> {{ user.username }}</p>

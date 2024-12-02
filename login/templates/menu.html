@@ -20,19 +20,20 @@
         }
 
         header {
-    background-color: #343a40;
-    color: #fff;
-    padding: 20px;
-    display: flex;
-    align-items: center;
-    border-bottom: 2px solid #495057;
-    width: 30%; /* Adjust the width as needed */
-    max-width: 800px; /* Set a maximum width for responsiveness */
-    justify-content: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 0 auto; /* Center the header horizontally */
-    border-radius: 10px; /* Round the corners by 10 pixels */
-}
+            background-color: #1A428A; /* Azul */
+            color: #fff;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #495057;
+            width: 30%; /* Ajusta el ancho según sea necesario */
+            max-width: 800px; /* Establece un ancho máximo para la respuesta */
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 0 auto; /* Centra el encabezado horizontalmente */
+            border-radius: 10px; /* Redondea las esquinas */
+        }
+
         header img {
             border-radius: 50%;
             width: 50px;
@@ -54,6 +55,9 @@
         .list-group {
             max-width: 600px;
             width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch; /* Asegura que los botones ocupen todo el ancho */
         }
 
         .list-group-item {
@@ -63,21 +67,28 @@
             margin-bottom: 10px;
             padding: 15px;
             font-size: 1.2em;
-            color: #343a40;
+            color: #1A428A; /* Azul */
             text-decoration: none;
             text-align: center;
             transition: background-color 0.3s ease;
+            width: 100%; /* Hace que los botones ocupen todo el ancho disponible */
         }
 
         .list-group-item:hover {
             background-color: #e9ecef;
+        }
+
+        /* Estilo de los botones cuando están en el estado hover */
+        .list-group-item:hover {
+            background-color: #1A428A;
+            color: #fff;
         }
     </style>
 </head>
 <body>
     <!-- Encabezado con el nombre del usuario y su foto -->
     <header>
-            <img src="/static/images/default_profile.png" alt="Foto de perfil">
+        <img src="/static/images/default_profile.png" alt="Foto de perfil">
         <h2>{{ user_profile.user.username }}</h2>
     </header>
 
