@@ -71,6 +71,9 @@ TEMPLATES = [
         },
     },
 ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Ubica aquí tus archivos estáticos en desarrollo
+]
 
 WSGI_APPLICATION = 'tikcet.wsgi.application'
 
