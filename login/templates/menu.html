@@ -15,8 +15,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start; /* Alinea todo al principio */
-            height: 100vh;
+            justify-content: center; /* Centra el contenido en la pantalla */
+            height: 100vh; /* Asegura que el body ocupe toda la altura de la pantalla */
+            text-align: center; /* Centra el texto */
         }
 
         header {
@@ -25,7 +26,7 @@
             padding: 10px 20px;
             display: flex;
             align-items: center;
-            justify-content: flex-start; /* Alinea los elementos a la izquierda */
+            justify-content: center; /* Centra los elementos del header */
             border-bottom: 2px solid #495057;
             width: 30%; /* Ajusta el ancho según sea necesario */
             max-width: 800px; /* Establece un ancho máximo para la respuesta */
@@ -50,8 +51,6 @@
             flex-direction: column;
             align-items: center;
             margin-top: 20px;
-            flex-grow: 1; /* Hace que el contenedor ocupe el espacio restante */
-            justify-content: flex-start; /* Alinea los elementos al principio */
         }
 
         .list-group {
@@ -71,7 +70,6 @@
             font-size: 1.2em;
             color: #1A428A; /* Azul */
             text-decoration: none;
-            text-align: center;
             transition: background-color 0.3s ease;
             width: 100%; /* Hace que los botones ocupen todo el ancho disponible */
         }
@@ -83,7 +81,7 @@
 
         /* Estilo para la imagen del logo al final */
         .logo-bottom {
-            margin-top: 5px; /* Reducir el espacio entre los botones y el logo */
+            margin-top: 10px; /* Reducir el espacio entre los botones y el logo */
             width: 40px; /* Tamaño más pequeño del logo */
             height: 40px; /* Tamaño más pequeño del logo */
             border-radius: 50%;
@@ -106,8 +104,5 @@
             <img src="/static/images/LOGO MINI - SIMA.png" alt="Logo" class="logo-bottom">
         </div>
     </div>
-
-    <!-- Logo en la parte inferior de los botones -->
-    
 </body>
 </html>
