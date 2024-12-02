@@ -1,1 +1,1 @@
-web: gunicorn restqare.wsgi:application --log-file -
+web: gunicorn tickets.wsgi:application --log-file -
