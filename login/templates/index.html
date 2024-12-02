@@ -4,7 +4,7 @@
 
 {% block content %}
 <body>
-    <div class="container">
+    <div class="container text-center"> <!-- Centra todo el contenido -->
         <h1>Bienvenido a la Plataforma</h1>
         <p>Por favor, elige una opción:</p>
         
@@ -15,8 +15,48 @@
         
         <!-- Imagen centrada -->
         <div class="center-image mt-4">
-            <img src="/static/images/Recurso 2@4x.png" alt="Imagen centrada" class="img-fluid">
+            <img src="/static/images/LOGO-SIMA.png" alt="Imagen centrada" class="img-fluid">
         </div>
     </div>
 </body>
 {% endblock %}
+
+<style>
+    /* Aseguramos que la imagen esté centrada */
+    .center-image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+
+    .center-image img {
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* Estilo adicional para centrar el contenido */
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    /* Estilo de los botones */
+    .actions .btn {
+        margin: 10px;
+        padding: 10px 20px;
+        background-color: #1A428A;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .actions .btn:hover {
+        background-color: #0056b3;
+    }
+</style>
