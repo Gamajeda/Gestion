@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-h15l8dkv6d69f8$9)i_!f96jgl1bj^-wqcykp&$y=4a)44t)uz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['https://gamajeda.github.io/Gestion/']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition

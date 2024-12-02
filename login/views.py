@@ -253,7 +253,6 @@ def inicio(request):
     )
     
     # Depuración: Imprimir los tickets sin calificar para verificar
-    print(tickets_sin_calificar)
     
     # Si existen tickets sin calificar, redirige al usuario para calificar el primero
     if tickets_sin_calificar.exists():
@@ -306,8 +305,6 @@ def inicio(request):
         )
 
     # Depuración
-    print(f"Search Query: {search_query}")
-    print(f"Tickets encontrados: {tickets.count()}")
 
     return render(request, 'inicio.html', {
         'tickets': tickets,
@@ -321,18 +318,14 @@ def inicio(request):
 def calificar_trabajo(request, id):
     ticket = get_object_or_404(Ticket, id_ticket=id)
     user = request.user
-    print("paso0")
     # Verificar si el usuario actual es el creador del ticket
     if ticket.usuario.user.id != user.id:
         messages.error(request, 'No puedes calificar un ticket que no te pertenece.')
-        print("paso0")
         return redirect('inicio')
 
     if request.method == 'POST':
         if 'calificacion' in request.POST:
-            print("Datos del formulario POST:", request.POST)
             form = CalificacionForm(request.POST)
-            print("paso1")
             if form.is_valid():
                 calificacion = form.cleaned_data['calificacion']
                 if not calificacion:  # Verifica si la calificación es vacía
@@ -348,7 +341,6 @@ def calificar_trabajo(request, id):
             else:
                 print("Errores del formulario:", form.errors)
         elif 'no_completado' in request.POST:
-            print("paso3")
             ticket.estado = 'P'  # Cambia el estado a 'Pendiente'
             ticket.save()
             messages.success(request, 'El estado del ticket ha sido cambiado a Pendiente.')
